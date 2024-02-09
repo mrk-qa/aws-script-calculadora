@@ -1,14 +1,16 @@
 from playwright.sync_api import Page
 from playwright.sync_api import expect
 
+import datetime
+
 class EstimatePage:
     def __init__(self, page: Page):
         self.page = page
 
     def view_page_estimate(self):
         my_estimate = self.page.locator("//h1")
-        expect(my_estimate).to_have_text("My Estimate")
- 
+        expect(my_estimate).to_have_text("Template")
+
     def edit_name_estimate(self, sigla):
         edit_name_estimate = self.page.locator("//span[@aria-label='Edit My Estimate']")
         edit_name_estimate.click()
@@ -21,7 +23,6 @@ class EstimatePage:
         save_name_estimate.click()
 
         print("Alterado o nome da estimativa da calculadora com sucesso")
-
         print("\n ------------------------------------------------------------ \n")
 
     def resources_ec2(self):
@@ -30,35 +31,40 @@ class EstimatePage:
 
         e = 1
         while e <= qtde_environments:
-   
+
             each_environment = self.page.locator(f"li [data-parent-group='true']:nth-child({e}) p").all()
             environment_name = each_environment[0].inner_text()
 
             for environment in each_environment:
                 print(f"Acessando ambiente {e}: {environment_name} \n")
+                self.page.wait_for_timeout(3000)
+                self.page.reload()
+                self.page.wait_for_timeout(3000)
+
                 environment.click()
-            
+
                 resources = self.page.query_selector_all("//tr[@data-selection-item='item']")
                 qtde_resources = len(resources)
-                
+
                 r = 1
                 while r <= qtde_resources:
                     each_edits = self.page.locator(f"tr[data-selection-item='item']:nth-child({r}) :nth-child(2) [data-cy='edit-service']").all()
 
                     for edit in each_edits:
-                        
-                        print(f"Editando EC2 {r} para editar no ambiente {environment_name} \n")
 
-                        edit.click(timeout=80000)
+                        print(f"Editando EC2 {r} para editar no ambiente {environment_name} \n")
+                        edit.click()
+                        self.page.wait_for_timeout(3000)
 
                         find = self.page.locator("//div[@class='show']/span[4]/div/div")
-                        find.click(timeout=80000)
+                        find.click()
 
-                        check = self.page.locator("//input[@aria-label='Enable monitoring']/..")
-                        check.click(timeout=80000)
+                        check = self.page.locator("//input[@aria-label='Habilitar monitoramento']/..")
+                        check.click()
+                        self.page.wait_for_timeout(3000)
 
                         update = self.page.locator("//button[@aria-label='Atualizar']")
-                        update.click(timeout=80000)
+                        update.click()
 
                     r += 1
 
@@ -73,9 +79,12 @@ class EstimatePage:
         e = 1
         while e <= qtde_environments:
             each_environment = self.page.locator(f"li [data-parent-group='true']:nth-child({e}) p").all()
+            environment_name = each_environment[0].inner_text()
+
+            count_webservers = 0
 
             for environment in each_environment:
-                print(f"Acessando ambiente {e}:  para validar as EC2")
+                print(f"Acessando ambiente {e}: {environment_name} para validar as EC2")
                 environment.click()
 
                 resources = self.page.query_selector_all("//tr[@data-selection-item='item']")
@@ -87,53 +96,54 @@ class EstimatePage:
 
                     for webserver in each_webservers:
                         describe_server = webserver.inner_text()
-
-                        if "WEB SERVERS" in describe_server:
-                            count_webservers = describe_server.count("WEB SERVERS")
-                            print(f"\n Foi identificado que o ambiente  possui {count_webservers} EC2 sendo WEB SERVERS \n")
-                            
-                            add_service = self.page.locator("//button[@aria-label='Adicionar serviço']")
-                            add_service.click()
-
-                            name_service = self.page.locator("//input[@aria-label='Localizar serviço']")
-                            name_service.click()
-                            name_service.fill("Elastic Load Balancing")
-
-                            configure_alb = self.page.locator("//button[@aria-label='Configurar Elastic Load Balancing']")
-                            configure_alb.click()
-
-                            add_description = self.page.locator("//input[@aria-label='Description - optional']")
-                            add_description.click()
-                            add_description.fill("ALB")
-
-                            select_region = self.page.locator("//div[@data-cy='region-enhanced-dropdown']//button")
-                            select_region.click()
-                            self.page.keyboard.type("São Paulo")
-                            self.page.keyboard.press("ArrowDown")
-                            self.page.keyboard.press("Enter")
-
-                            add_qtde_alb = self.page.locator("//input[@aria-label='Número de Application Load Balancers']")
-                            add_qtde_alb.click()
-                            add_qtde_alb.fill(f"{count_webservers}")
-
-                            new_conections_alb = self.page.locator("//input[@aria-label='Número médio de novas conexões por ALB Valor']")
-                            new_conections_alb.click()
-                            new_conections_alb.fill("1000")
-                            self.page.keyboard.press("Tab")
-                            self.page.keyboard.press("Enter")
-                            self.page.keyboard.press("ArrowDown")
-                            self.page.keyboard.press("Enter")
-
-                            self.page.wait_for_timeout(4000)
-
-                            save_and_view_resume = self.page.locator("//button[@aria-label='Salvar e visualizar resumo']")
-                            save_and_view_resume.click()
-
-                            print("Recurso: Elastic Load Balacing foi adicionado com sucesso \n")
-                            print(f"Incluindo {count_webservers} a quantidade de ALB")
+                        count_webservers += describe_server.count("WEB SERVERS")
 
                     w += 1
 
+            if count_webservers > 0:
+                print(f"\n Foi identificado que o ambiente  possui {count_webservers} EC2 sendo WEB SERVERS \n")
+
+                add_service = self.page.locator("//button[@aria-label='Adicionar serviço']")
+                add_service.click()
+
+                name_service = self.page.locator("//input[@aria-label='Localizar serviço']")
+                name_service.click()
+                name_service.fill("Elastic Load Balancing")
+
+                configure_alb = self.page.locator("//button[@aria-label='Configurar Elastic Load Balancing']")
+                configure_alb.click()
+
+                add_description = self.page.locator("//input[@aria-label='Description - optional']")
+                add_description.click()
+                add_description.fill("ALB")
+
+                select_region = self.page.locator("//div[@data-cy='region-enhanced-dropdown']//button")
+                select_region.click()
+                self.page.keyboard.type("São Paulo")
+                self.page.keyboard.press("ArrowDown")
+                self.page.keyboard.press("Enter")
+
+                add_qtde_alb = self.page.locator("//input[@aria-label='Número de Application Load Balancers']")
+                add_qtde_alb.click()
+                add_qtde_alb.fill(f"{count_webservers}")
+
+                new_conections_alb = self.page.locator("//input[@aria-label='Número médio de novas conexões por ALB Valor']")
+                new_conections_alb.click()
+                new_conections_alb.fill("1000")
+                self.page.keyboard.press("Tab")
+                self.page.keyboard.press("Enter")
+                self.page.keyboard.press("ArrowDown")
+                self.page.keyboard.press("Enter")
+
+                self.page.wait_for_timeout(3000)
+
+                save_and_view_resume = self.page.locator("//button[@aria-label='Salvar e visualizar resumo']")
+                save_and_view_resume.click()
+
+                print("Recurso: Elastic Load Balacing foi adicionado com sucesso")
+                print("\n ------------------------------------------------------------ \n")
+            else:
+                print("\n Foi identificado que não existem WEBSERVERS e por isso não foi adicionado ALB")
                 print("\n ------------------------------------------------------------ \n")
 
             e += 1
@@ -146,12 +156,12 @@ class EstimatePage:
         qtde_environments = len(select_environment)
         environment_name = select_environment[0].inner_text()
 
-        print ("Validando os ambientes \n")
+        print("Validando os ambientes \n")
 
         if qtde_environments == 3:
             print("Já existem 3 ambientes estimados")
             print("\n ------------------------------------------------------------ \n")
-        
+
         elif qtde_environments == 1:
             print(f"ATENÇÃO! Só existe o ambiente {environment_name}, estimar os ambientes manualmente conforme necessário")
             print("\n ------------------------------------------------------------ \n")
@@ -160,7 +170,6 @@ class EstimatePage:
             print("Criando ambiente DEVELOPMENT \n")
             select_environment_homol = self.page.locator("//label[@aria-label='Select service(s) to perform actions Select Homologation']")
             select_environment_homol.click()
-            
 
             duplicated_homol = self.page.locator("//button[@aria-label='Duplicar']")
             duplicated_homol.click()
@@ -191,7 +200,7 @@ class EstimatePage:
 
             select_environment_dev = self.page.locator("//label[@aria-label='Select service(s) to perform actions Select Development']")
             select_environment_dev.click()
-            
+
             edit_dev_copy = self.page.locator("//button[@aria-label='edit Development_copy']")
             edit_dev_copy.click()
 
@@ -208,30 +217,34 @@ class EstimatePage:
         else:
             print("Erro ao validar os ambientes")
             print("\n ------------------------------------------------------------ \n")
-        
+
     def shared(self, sigla):
+        text_estimate = self.page.locator("//div[@data-annual-cost=''true]")
+        price_estimate = text_estimate.inner_text()
+
+        notification = self.page.locator("//button[@aria-label='Fechar notificação']")
+        if notification.is_visible():
+            notification.click()
+
         shared = self.page.locator("//button[@aria-label='Compartilhar']")
         shared.click()
 
         iagree = self.page.locator("//button[@aria-label='Concordar e continuar']")
         iagree.click()
 
-        self.page.wait_for_timeout(5000)
+        self.page.wait_for_timeout(6000)
 
         copy_link = self.page.locator(".save-share-clipboard-wrapper div:first-child input").get_attribute("value")
         link = copy_link
         print(f"Calculadora da sigla {sigla}: " + link + " \n")
 
-        with open(f"url/url_{sigla}.txt", "w") as f:
-            f.write(link)
+        with open(f"siglas/calculadoras/{sigla}.txt", "w") as c:
+            c.write(f"## Calculadora {sigla}\n")
+            c.write(f"v0 {price_estimate}\n")
+            c.write(f"{link}\n")
 
         print("\n ------------------------------------------------------------ \n")
 
-        self.page.screenshot(path=f"reports/calculadora_{sigla}.png", full_page=True)
-        
-    def update_estimate(self):
-        update = self.page.locator("//button[@aria-label='Botão Atualizar estimativa']")
-        update.click()
+        data_atual = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        print("Iniciando atualização de estimativa")
-        print("\n ------------------------------------------------------------ \n")
+        self.page.screenshot(path=f"reports/calculadora_{sigla}_{data_atual}.png", full_page=True)

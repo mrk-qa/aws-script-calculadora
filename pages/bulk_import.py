@@ -12,11 +12,11 @@ class BulkImportPage:
         print("\n ------------------------------------------------------------ \n")
         print(f"\n Iniciando automação da calculadora sigla: {sigla} \n")
         select_service = self.page.locator("//span[contains(text(), 'Escolher um serviço')]")
-        select_service.click(timeout=60000)
+        select_service.click()
 
         ec2_instance_option = self.page.locator(f"//span[contains(text(), '{service}')]")
         ec2_instance_option.click()
-    
+
     def input_field(self, sigla):
         input_field = self.page.locator("//input[@placeholder='Insira um nome de grupo']")
         input_field.fill(sigla)
@@ -33,7 +33,7 @@ class BulkImportPage:
             pyautogui.press("enter")
 
         file_name = f"{sigla}_AWS.xlsx"
-        file_path = os.path.join(os.getcwd()+ "/siglas/", file_name)
+        file_path = os.path.join(os.getcwd() + "/siglas/", file_name)
 
         if os.path.exists(file_path):
             print(f"Fazendo upload do arquivo: {file_name} \n")
