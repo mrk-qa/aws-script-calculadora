@@ -3,14 +3,13 @@ from playwright.sync_api import expect
 
 import pyautogui
 import os
+import platform
 
 class BulkImportPage:
     def __init__(self, page: Page):
         self.page = page
 
-    def select_service(self, sigla, service):
-        print("\n ------------------------------------------------------------ \n")
-        print(f"\n Iniciando automação da calculadora sigla: {sigla} \n")
+    def select_service(self, service):
         select_service = self.page.locator("//span[contains(text(), 'Escolher um serviço')]")
         select_service.click()
 
@@ -25,15 +24,24 @@ class BulkImportPage:
         upload_input = self.page.locator("//button[@aria-label='Carregar modelo de importação em massa']")
         upload_input.click()
 
-        # pastas = ["documentos", "repositorios", "playwright-with-python", "siglas"]
-        pastas = ["Documents"]
+        self.page.wait_for_timeout(3000)
 
-        for pasta in pastas:
-            pyautogui.write(pasta)
+        operating_system = platform.system()
+
+        if operating_system == "Windows":
+            file_path_windows = os.getcwd() + "\siglas\excel"
+
+            pyautogui.write(file_path_windows)
             pyautogui.press("enter")
+        else:
+            pastas = ["documentos", "repositorios", "script-calculadora", "siglas", "excel"]
+
+            for pasta in pastas:
+                pyautogui.write(pasta)
+                pyautogui.press("enter")
 
         file_name = f"{sigla}_AWS.xlsx"
-        file_path = os.path.join(os.getcwd() + "/siglas/", file_name)
+        file_path = os.path.join(os.getcwd() + "/siglas/excel/", file_name)
 
         if os.path.exists(file_path):
             print(f"Fazendo upload do arquivo: {file_name} \n")

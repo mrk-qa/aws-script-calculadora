@@ -29,7 +29,7 @@ sigla = input("Qual é a sigla? -->: ").upper()
 def verificar_arquivo_excel(sigla):
     nome_arquivo = sigla + "_AWS.xlsx"
     
-    if os.path.exists("siglas/" + nome_arquivo):
+    if os.path.exists("siglas/excel/" + nome_arquivo):
         return True
     else:
         print (f"\n Arquivo {nome_arquivo} não encontrado \n")
