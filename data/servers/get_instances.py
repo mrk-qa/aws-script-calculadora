@@ -8,7 +8,7 @@ import ssl
  
 def get_instance_data(url):
     try:
-        ssl_context = ssl.create_default_context(cafile="/Users/mantdsv/cacert.pem")
+        ssl_context = ssl.create_default_context()
         with urllib.request.urlopen(url, context=ssl_context) as response:
             data = response.read().decode('utf-8')
             return json.loads(data)
