@@ -3,7 +3,6 @@ warnings.filterwarnings("ignore", "\nPyarrow", DeprecationWarning)
 warnings.simplefilter("ignore")
  
 from openpyxl import load_workbook
-from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
@@ -48,21 +47,19 @@ def ajustar_dimensionamento():
     largura_janela = int(app.primaryScreen().size().width() * 0.4) # 40% da largura da tela
     altura_janela = int(app.primaryScreen().size().height() * 0.4) # 40% da altura da tela
     return largura_janela, altura_janela
-
+ 
 app = QApplication(sys.argv)
 root = QWidget()
 root.setWindowTitle("Calculadora AWS - NTT DATA")
-
-# Definindo o ícone da janela
-root.setWindowIcon(QIcon('/assets/ntt_icone.png'))
-
+root.setWindowIcon(QIcon(os.path.join(os.getcwd(), "/assets/ntt_logo.png")))
+ 
 largura_janela, altura_janela = ajustar_dimensionamento()
 root.resize(largura_janela, altura_janela)
 root.setFixedSize(((app.primaryScreen().size().width() - largura_janela) // 2) + 100,
           ((app.primaryScreen().size().height() - altura_janela) // 2) + 100)
 root.move((app.primaryScreen().size().width() - largura_janela) // 2,
           (app.primaryScreen().size().height() - altura_janela) // 2)
-
+ 
 # Logo da empresa
 logo_label = QLabel(root)
 pixmap = QPixmap(os.getcwd() + '/assets/ntt_logo.png')
@@ -70,10 +67,10 @@ max_width_logo = int(largura_janela * 0.6)  # Definindo uma largura máxima para
 pixmap = pixmap.scaledToWidth(max_width_logo)
 logo_label.setPixmap(pixmap)
 logo_label.setStyleSheet("margin-bottom: 10px;")
-
+ 
 layout = QGridLayout(root)
 layout.addWidget(logo_label, 0, 0, 1, 2, alignment=Qt.AlignHCenter)
-
+ 
 # Lista de radio buttons
 opcoes = ["Windows", "Linux", "Windows e Linux"]
 sistema_operacional_buttons = []
@@ -82,26 +79,26 @@ for index, opcao in enumerate(opcoes, start=1):
     button.setStyleSheet("margin-bottom: 7px; font-size: 18px; margin-left: 50px;")
     sistema_operacional_buttons.append(button)
     layout.addWidget(button, index, 0)
-
+ 
 # Campo de entrada de texto
 comentario_entry = QLineEdit(root)
 comentario_entry.setPlaceholderText("Digite a sigla")
 comentario_entry.setStyleSheet("margin-top: 20px; margin-bottom: 10px; width: 110px; height: 30px; font-size: 16px;")
 layout.addWidget(comentario_entry, len(opcoes) + 1, 0, 1, 2, alignment=Qt.AlignCenter)
-
+ 
 # Botão de confirmação
 confirmar_button = QPushButton('Confirmar', root)
 confirmar_button.clicked.connect(selecionar_so_e_sigla)
 confirmar_button.setStyleSheet("background-color: #007BC4; color: white; margin-bottom: 20px; width: 110px; height: 30px; font-size: 16px;")
 layout.addWidget(confirmar_button, len(opcoes) + 2, 0, 1, 2, alignment=Qt.AlignCenter)
-
+ 
 assinatura_label = QLabel("Develop by: Anderson e Marco")
-assinatura_label.setStyleSheet("margin-top: 10px; font-style: italic;")
+assinatura_label .setStyleSheet("margin-top: 10px; font-style: italic;")
 layout.addWidget(assinatura_label, len(opcoes) + 3, 0, 1, 2, alignment=Qt.AlignCenter)
-
+ 
 root.setLayout(layout)
 root.show()
-
+ 
 app.exec_()
  
 ############################################################
@@ -334,6 +331,7 @@ def criar_aba_com_resultados(caminho_arquivo, resultados):
             elif partes[0].upper() == "PRODUCTION" or partes[0].upper() == "PRODUCAO":
                 linha = [partes[0], descricao,'sa-east-1', partes[3], '', 'Shared Instances', partes[1], '', 'Always On', '1 Yr No Upfront EC2 Instance Savings Plan', 'General Purpose SSD (gp3)', partes[4], '', '', '6x Daily', '20']
             else: # Outros ambientes
+                linha = [partes[0], descricao,'sa-east-1', partes[3], '', 'Shared Instances', partes[1], '40', 'Hours/Week', 'On-Demand', 'General Purpose SSD (gp3)', partes[4], '', '', '2x Daily', '10']
                 ambiente_adicional.append(partes[0])
             nova_aba.append(linha)
  
@@ -453,13 +451,22 @@ def copiar_dados(origem, destino):
         for cell in row:
             cell.value = None
  
+    arquivos_copiados = 0
     # Copiar dados da aba "Controle" para a aba de destino
     for row_idx, row in enumerate(ws_origem.iter_rows(min_row=2), start=4):
-        for col_idx, cell in enumerate(row, start=2): # Começa da coluna B
-            ws_destino.cell(row=row_idx, column=col_idx).value = cell.value
+        if row[0].value.upper() in ["DEVELOPMENT", "DESENVOLVIMENTO", "HOMOLOGATION", "HOMOLOGACAO", "PRE-PRODUCTION", "PRE-PRODUCAO", "PRODUCTION", "PRODUCAO"]:
+            arquivos_copiados = arquivos_copiados + 1
+            for col_idx, cell in enumerate(row, start=2): # Começa da coluna B
+                ws_destino.cell(row=row_idx, column=col_idx).value = cell.value
  
     # Salvar as alterações no arquivo de destino
     wb.save(destino)
+ 
+    # Verificar se os dados foram copiados
+    if arquivos_copiados == 0:
+        os.remove(destino) if os.path.exists(destino) else None
+        show_warning_message("Aviso", f"Informações insuficientes para gerar o Modelo AWS")
+        exit(1)
  
 ############################################################
 ####################### ALERTAS ############################
@@ -654,7 +661,7 @@ try:
                 # Copia os dados para o modelo AWS
                 copiar_dados(novo_caminho_arquivo, destinoModeloAWS)
  
-                print(f"Tratamento de dados concluído com sucesso. \nOs servidores são {soPesquisa}.")
+                print(f"Tratamento de dados concluído com sucesso. \n\nOs servidores são {soPesquisa}.")
  
                 print("\n ------------------------------------------------------------ \n")
  
@@ -664,4 +671,3 @@ try:
             print("Nenhum arquivo selecionado. A ação foi cancelada pelo usuário.")
 except NameError:
     print("Calculadora encerrada pelo usuário.")
- 

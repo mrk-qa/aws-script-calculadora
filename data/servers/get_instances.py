@@ -17,7 +17,7 @@ def get_instance_data(url):
         return []
  
 def filter_instance_types(instance, region):    
-    allowed_prefixes = ['m6a', 'm5a', 'c6a', 'c5a', 'm6i', 'm5i', 'c6i', 'c5i']
+    allowed_prefixes = ['m6a', 'm5a', 'c6a', 'c5a', 'm6i', 'm5i', 'c6i', 'c5i', 'm5zn', 'm5n']
     return [(inst['instance_type'], inst['vCPU'], inst['memory']) for inst in instance if inst['instance_type'].startswith(tuple(allowed_prefixes)) and region in inst['availability_zones']]
  
 def list_instance_types_in_region(region):
