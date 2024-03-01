@@ -634,6 +634,7 @@ def copiar_dados(origem, destino):
 def show_error_message(title, message):
     app = QApplication.processEvents()
     error_box = QMessageBox()
+    error_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
     error_box.setIcon(QMessageBox.Critical)
     error_box.setWindowTitle(title)
     error_box.setText(message)
@@ -644,6 +645,7 @@ def show_error_message(title, message):
 def show_warning_message(title, message):
     app = QApplication.processEvents()
     warning_box = QMessageBox()
+    warning_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
     warning_box.setIcon(QMessageBox.Warning)
     warning_box.setWindowTitle(title)
     warning_box.setText(message)
@@ -653,16 +655,18 @@ def show_warning_message(title, message):
 
 def show_information_message(title, message):
     app = QApplication.processEvents()
-    warning_box = QMessageBox()
-    warning_box.setIcon(QMessageBox.Information)
-    warning_box.setWindowTitle(title)
-    warning_box.setText(message)
-    warning_box.setStandardButtons(QMessageBox.Ok)
-    warning_box.exec_()
+    information = QMessageBox()
+    information.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+    information.setIcon(QMessageBox.Information)
+    information.setWindowTitle(title)
+    information.setText(message)
+    information.setStandardButtons(QMessageBox.Ok)
+    information.exec_()
     QApplication.processEvents()
 
 def show_information_message_with_link(title, message, link):
     msg_box = QMessageBox()
+    msg_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
     msg_box.setIcon(QMessageBox.Information)
     msg_box.setWindowTitle(title)
     msg_box.setText(message)
