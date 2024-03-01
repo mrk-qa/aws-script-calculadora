@@ -45,7 +45,12 @@ def selecionar_so_calculadora_sigla():
         print("\nObtendo Sistema Operacional:", so_selecionado)
         print("\nObtendo Tipo de Calculadora:", tipo_calculadora_selecionado)
         print("\nObtendo informações da sigla: " + sigla)
-        root.close()
+        
+        # Verificar se a opção selecionada é "Calculadora To Be"
+        if tipo_calculadora_selecionado == "Calculadora To Be":
+            QMessageBox.warning(root, "Aviso", "A opção 'Calculadora To Be' está em desenvolvimento")
+        else:
+            root.close()  # Fechar a janela apenas se não for "Calculadora To Be"
     else:
         QMessageBox.warning(root, "Aviso", "Você precisa preencher uma sigla")
  
@@ -57,7 +62,7 @@ def ajustar_dimensionamento():
 app = QApplication(sys.argv)
 root = QWidget()
 root.setWindowTitle("Script Calculadora AWS - NTT DATA")
-root.setWindowIcon(QIcon(os.path.join(os.getcwd(), "/assets/ntt_logo.png")))
+root.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
  
 largura_janela, altura_janela = ajustar_dimensionamento()
 root.resize(largura_janela, altura_janela)
@@ -102,7 +107,7 @@ layout.addWidget(radio_button_3, 4, 0)
 # Adicionando QComboBox ao lado da lista de radio buttons
 combobox = QComboBox()
 combobox.addItem("Calculadora MAP")
-combobox.addItem("Calculadora Oficial")
+combobox.addItem("Calculadora To Be")
 combobox.setStyleSheet("font-size: 16px; margin-bottom: 40px;")
 layout.addWidget(combobox, 2, 1, len(opcoes), 1, alignment=Qt.AlignLeft | Qt.AlignCenter)  # Adiciona à coluna 1 para alinhar ao lado das radio buttons
 
