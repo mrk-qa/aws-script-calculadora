@@ -3,7 +3,7 @@ warnings.filterwarnings("ignore", "\nPyarrow", DeprecationWarning)
 warnings.simplefilter("ignore")
  
 from openpyxl import load_workbook
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
  
@@ -18,30 +18,36 @@ import pandas as pd
 ############################################################
 ################ INTERFACE DO USUÁRIO ######################
 ############################################################
- 
-def selecionar_so_e_sigla():
+
+def selecionar_so_calculadora_sigla():
     global sigla
+    global tipo_calculadora_selecionado
     global so_selecionado
-    index = sistema_operacional_checked()
-    if index is None:
-        QMessageBox.warning(root, "Aviso", "Você precisa selecionar um sistema operacional")
+
+    # Obtendo o texto do botão de rádio selecionado
+    if radio_button_1.isChecked():
+        so_selecionado = radio_button_1.text()
+    elif radio_button_2.isChecked():
+        so_selecionado = radio_button_2.text()
+    elif radio_button_3.isChecked():
+        so_selecionado = radio_button_3.text()
     else:
-        so_selecionado = opcoes[index]
-        sigla = comentario_entry.text().upper()
-        if sigla:
-            print("\n ------------------------------------------------------------ \n")
-            print("Iniciando automação")
-            print("\nObtendo Sistema Operacional:", so_selecionado)
-            print("\nObtendo informações da sigla: " + sigla)
-            root.close()
-        else:
-            QMessageBox.warning(root, "Aviso", "Você precisa digitar uma sigla")
- 
-def sistema_operacional_checked():
-    for button in sistema_operacional_buttons:
-        if button.isChecked():
-            return sistema_operacional_buttons.index(button)
-    return None
+        QMessageBox.warning(root, "Aviso", "Você precisa selecionar um sistema operacional")
+        return
+    
+    # Obtendo o texto selecionado do combobox
+    tipo_calculadora_selecionado = combobox.currentText()
+    
+    sigla = comentario_entry.text().upper()
+    if sigla:
+        print("\n ------------------------------------------------------------ \n")
+        print("Iniciando automação")
+        print("\nObtendo Sistema Operacional:", so_selecionado)
+        print("\nObtendo Tipo de Calculadora:", tipo_calculadora_selecionado)
+        print("\nObtendo informações da sigla: " + sigla)
+        root.close()
+    else:
+        QMessageBox.warning(root, "Aviso", "Você precisa preencher uma sigla")
  
 def ajustar_dimensionamento():
     largura_janela = int(app.primaryScreen().size().width() * 0.4) # 40% da largura da tela
@@ -50,7 +56,7 @@ def ajustar_dimensionamento():
  
 app = QApplication(sys.argv)
 root = QWidget()
-root.setWindowTitle("Calculadora AWS - NTT DATA")
+root.setWindowTitle("Script Calculadora AWS - NTT DATA")
 root.setWindowIcon(QIcon(os.path.join(os.getcwd(), "/assets/ntt_logo.png")))
  
 largura_janela, altura_janela = ajustar_dimensionamento()
@@ -63,60 +69,80 @@ root.move((app.primaryScreen().size().width() - largura_janela) // 2,
 # Logo da empresa
 logo_label = QLabel(root)
 pixmap = QPixmap(os.getcwd() + '/assets/ntt_logo.png')
-max_width_logo = int(largura_janela * 0.6)  # Definindo uma largura máxima para a logo
+max_width_logo = int(largura_janela * 0.4)  # Definindo uma largura máxima para a logo
 pixmap = pixmap.scaledToWidth(max_width_logo)
 logo_label.setPixmap(pixmap)
-logo_label.setStyleSheet("margin-bottom: 10px;")
  
 layout = QGridLayout(root)
 layout.addWidget(logo_label, 0, 0, 1, 2, alignment=Qt.AlignHCenter)
- 
+
+# Label abaixo do logo
+label_informativa = QLabel("Selecione as opções de S.O, tipo de calculadora e preencha a sigla abaixo:")
+label_informativa.setStyleSheet("font-size: 14px")
+layout.addWidget(label_informativa, 1, 0, 1, 2, alignment=Qt.AlignCenter)
+
 # Lista de radio buttons
 opcoes = ["Windows", "Linux", "Windows e Linux"]
-sistema_operacional_buttons = []
-for index, opcao in enumerate(opcoes, start=1):
-    button = QRadioButton(opcao)
-    button.setStyleSheet("margin-bottom: 7px; font-size: 18px; margin-left: 50px;")
-    sistema_operacional_buttons.append(button)
-    layout.addWidget(button, index, 0)
- 
+
+# Botão de radio 1
+radio_button_1 = QRadioButton(opcoes[0])
+radio_button_1.setStyleSheet("font-size: 18px; margin-left: 130px;")
+layout.addWidget(radio_button_1, 3, 0)
+
+# Botão de radio 2
+radio_button_2 = QRadioButton(opcoes[1])
+radio_button_2.setStyleSheet("font-size: 18px; margin-left: 130px; margin-bottom: 100px;")
+layout.addWidget(radio_button_2, 4, 0)
+
+# Botão de radio 3
+radio_button_3 = QRadioButton(opcoes[2])
+radio_button_3.setStyleSheet("font-size: 18px; margin-left: 130px; margin-bottom: 30px;")
+layout.addWidget(radio_button_3, 4, 0)
+
+# Adicionando QComboBox ao lado da lista de radio buttons
+combobox = QComboBox()
+combobox.addItem("Calculadora MAP")
+combobox.addItem("Calculadora Oficial")
+combobox.setStyleSheet("font-size: 16px; margin-bottom: 40px;")
+layout.addWidget(combobox, 2, 1, len(opcoes), 1, alignment=Qt.AlignLeft | Qt.AlignCenter)  # Adiciona à coluna 1 para alinhar ao lado das radio buttons
+
 # Campo de entrada de texto
 comentario_entry = QLineEdit(root)
 comentario_entry.setPlaceholderText("Digite a sigla")
-comentario_entry.setStyleSheet("margin-top: 20px; margin-bottom: 10px; width: 110px; height: 30px; font-size: 16px;")
+comentario_entry.setStyleSheet("margin-top: 100px; width: 110px; height: 30px; font-size: 16px;")
 layout.addWidget(comentario_entry, len(opcoes) + 1, 0, 1, 2, alignment=Qt.AlignCenter)
- 
+
 # Botão de confirmação
 confirmar_button = QPushButton('Confirmar', root)
-confirmar_button.clicked.connect(selecionar_so_e_sigla)
-confirmar_button.setStyleSheet("background-color: #007BC4; color: white; margin-bottom: 20px; width: 110px; height: 30px; font-size: 16px;")
+confirmar_button.clicked.connect(selecionar_so_calculadora_sigla)
+confirmar_button.setStyleSheet("background-color: #007BC4; color: white; margin-bottom: 10px; width: 110px; height: 30px; font-size: 16px;")
 layout.addWidget(confirmar_button, len(opcoes) + 2, 0, 1, 2, alignment=Qt.AlignCenter)
- 
+
 assinatura_label = QLabel("Develop by: Anderson e Marco")
 assinatura_label .setStyleSheet("margin-top: 10px; font-style: italic;")
 layout.addWidget(assinatura_label, len(opcoes) + 3, 0, 1, 2, alignment=Qt.AlignCenter)
- 
+
 root.setLayout(layout)
 root.show()
- 
+
 app.exec_()
- 
+
 ############################################################
 ################# TRATAMENTO DE DADOS ######################
 ############################################################
- 
+
 def selecionar_arquivo():
     print("\n ------------------------------------------------------------ \n")
     caminho_arquivo, _ = QFileDialog.getOpenFileName(None, "Selecione o arquivo de dados", filter="Arquivos Excel (*.xlsx)")
     return caminho_arquivo
- 
+
 def selecionar_caminho_salvar():
     caminho_pasta = "data/processing"
     arquivo = "data_sigla.xlsx"
     caminho_arquivo = os.path.join(os.getcwd(),caminho_pasta,arquivo)
     os.remove(caminho_arquivo) if os.path.exists(caminho_arquivo) else None
     return caminho_arquivo
- 
+
 def validar_aba_excel(caminho_arquivo, aba):
     xls = pd.ExcelFile(caminho_arquivo)
  
@@ -126,7 +152,7 @@ def validar_aba_excel(caminho_arquivo, aba):
         return True
     else:
         return False
- 
+
 def converter_utf8(caminho_arquivo, aba):
     print("Iniciando tratamento de dados \n")
  
@@ -157,7 +183,7 @@ def converter_utf8(caminho_arquivo, aba):
  
     # Salvar o DataFrame de volta no arquivo Excel com a codificação UTF-8
     df.to_excel(caminho_arquivo, sheet_name=aba, index=False)
- 
+
 def necessita_conversao(texto):
     # Lista de caracteres em ISO-8859-1
     caracteres_iso88591 = "£¡§‡ƒ¢Æ€•"
@@ -169,7 +195,7 @@ def necessita_conversao(texto):
  
     # Se nenhum caractere em ISO-8859-1 foi encontrado, não é necessário converter
     return False
- 
+
 def corrigir_e_converter_texto(texto):
     # Corrigir caracteres específicos
     texto = texto.replace("Ã‡ÃƒO", "CAO")
@@ -188,13 +214,13 @@ def corrigir_e_converter_texto(texto):
     texto = unicodedata.normalize("NFD", texto).encode("ascii", "ignore").decode("utf-8")
  
     return texto
- 
+
 def remover_acentos(texto):
     # Remover acentos
     texto_sem_acento = unicodedata.normalize("NFD", texto).encode("ascii", "ignore").decode("utf-8")
  
     return ajustar_case(texto_sem_acento)
- 
+
 def ajustar_case(texto):
     # Quebra a string em palavras
     palavras = texto.split()
@@ -212,7 +238,7 @@ def ajustar_case(texto):
     # Remove o último espaço adicionado
     texto_ajustado = texto_ajustado.strip()
     return texto_ajustado
- 
+
 def ajustar_caso_palavra(palavra):
     # Ajusta o caso da palavra
     if palavra.islower():
@@ -223,7 +249,7 @@ def ajustar_caso_palavra(palavra):
         return palavra
     else:
         return palavra.lower()
- 
+
 def organizar_colunas(caminho_arquivo, aba):
     # Carrega o arquivo Excel
     xls = pd.ExcelFile(caminho_arquivo)
@@ -240,7 +266,7 @@ def organizar_colunas(caminho_arquivo, aba):
  
     # Salva as alterações no arquivo Excel
     planilha_original.to_excel(novo_caminho_arquivo, sheet_name=aba, index=False)
- 
+
 def combinacoes_configuracoes(caminho_arquivo, aba):
     # Carregar a planilha Excel
     df = pd.read_excel(caminho_arquivo, sheet_name=aba)
@@ -296,7 +322,7 @@ def combinacoes_configuracoes(caminho_arquivo, aba):
     contagem_combinacoes['RESULTADO'] = contagem_combinacoes.apply(formatar_resultado, axis=1)
  
     return contagem_combinacoes['RESULTADO']
- 
+
 def criar_aba_com_resultados(caminho_arquivo, resultados):
     workbook = load_workbook(caminho_arquivo)
     aba = 'Controle'
@@ -352,11 +378,123 @@ def criar_aba_com_resultados(caminho_arquivo, resultados):
  
     # Fechar o arquivo Excel
     workbook.close()
+
+def combinacoes_instancias(caminho_arquivo, aba):
+    # Carregar a planilha Excel
+    df = pd.read_excel(caminho_arquivo, sheet_name=aba)
  
+    # Concatenar 'Group', 'Description' e 'Operating System' em uma nova coluna 'COMBINACAO'
+    df['COMBINACAO'] = df['Group'] + ';' + df['Description'] + ';' + df['Operating System']+ ';' + df['Instance Type']
+    df['STORAGE'] = df['Storage amount per Instance (GB)']
+ 
+    # Calcular o maior "storage" para cada combinação
+    max_storage_combinacao = {}
+    for _, row in df.iterrows():
+        combinacao = row['COMBINACAO']
+        storage = row['STORAGE']
+        if combinacao not in max_storage_combinacao:
+            max_storage_combinacao[combinacao] = storage
+        else:
+            max_storage_combinacao[combinacao] = max(max_storage_combinacao[combinacao], storage)
+ 
+    # Contar o número de ocorrências de cada combinação
+    contagem_combinacoes = df['COMBINACAO'].value_counts().reset_index()
+    contagem_combinacoes.columns = ['COMBINACAO', 'QUANTIDADE']
+ 
+    #show_information_message("Aviso", f"Para cada ambiente foi aplicada a regra em servidores WEBSERVERS referente a Multi AZ e Blue/Green \n\nAmbientes: \n\nDevelopment = 2 AZs x 2 Blue/Green \nHomologation = 2 AZs x 2 Blue/Green \nProduction = 3 AZs x 2 Blue/Green \n\n")
+ 
+    # Formatar os resultados no formato desejado e aplica calculo de Multi-AZ e Blue/Green
+    def formatar_resultado(row):
+        combinacao = row['COMBINACAO']
+        quantidade = row['QUANTIDADE']
+        partes = combinacao.split(';')
+        max_storage = max_storage_combinacao.get(combinacao, 0)
+        if len(partes) >= 3:
+            grupo = partes[0]
+            descricao = partes[1]
+            so = partes[2]
+            instancia = partes[3]
+ 
+            # Obter a quantidade de máquinas
+            qtde_maquinas = re.findall(r'(\d+) x', descricao)
+            qtde_maquinas = int(qtde_maquinas[0])
+ 
+            # Verificar se existem combinações
+            if quantidade > 1:
+                nova_qtde_maquinas = qtde_maquinas + quantidade
+                # nova_qtde_maquinas = f"{nova_qtde_maquinas} x"
+                descricao = descricao.replace(f"{qtde_maquinas} x", f"{nova_qtde_maquinas} x")
+ 
+                return f"{grupo};{nova_qtde_maquinas};{descricao};{so};{instancia};{max_storage}"
+            else:
+                return f"{grupo};{qtde_maquinas};{descricao};{so};{instancia};{max_storage}"
+        else:
+            return f"{combinacao};{quantidade};{max_storage}"
+ 
+    contagem_combinacoes['RESULTADO'] = contagem_combinacoes.apply(formatar_resultado, axis=1)
+ 
+    return contagem_combinacoes['RESULTADO']
+
+def criar_aba_com_resultados_tratados(caminho_arquivo, resultados):
+    workbook = load_workbook(caminho_arquivo)
+    aba = 'Controle'
+ 
+    # Deletar aba antiga
+    if aba in workbook.sheetnames:
+        antiga = workbook[aba]
+        workbook.remove(antiga)
+ 
+    # Criar nova aba de resultados
+    nova_aba = workbook.create_sheet(aba)
+ 
+    aba_controle = workbook[aba]
+ 
+    mapeamento_colunas = {
+        "Group": 0, "Description": 1, "AWS Region": 2, "Operating System": 3, "Instance Type": 4,
+        "Tenancy": 5, "Number of Instances": 6, "Assumed Usage": 7, "Usage Type": 8, "Purchasing Option": 9,
+        "Storage Type": 10, "Storage amount per Instance (GB)": 11,"Provisioning IOPS per instance (applicable for gp3, io1, io2)": 12, "EBS Throughput per Instance (applicable for gp3)(Mbps)": 13,
+        "Snapshot Frequency": 14, "EBS Snapshot amount per Instance (GB/snapshot)": 15
+    }
+ 
+    # Adicionar cabeçalhos
+    cabecalhos = list(mapeamento_colunas.keys())
+    nova_aba.append(cabecalhos)
+ 
+    ambiente_adicional = []
+    # Preencher a nova aba com os resultados
+    for resultado in resultados:
+        if resultado is not None: #Verifica se o resultado não é None
+            partes = resultado.split(';')
+            descricao = '"' + partes[2] + '"'
+ 
+            if partes[3] == "Linux Server":
+                partes[3] = "Linux"
+ 
+            if partes[0].upper() == "DEVELOPMENT" or partes[0].upper() == "DESENVOLVIMENTO" or partes[0].upper() == "HOMOLOGATION" or partes[0].upper() == "HOMOLOGACAO" or partes[0].upper() == "PRE-PRODUCTION" or partes[0].upper() == "PRE-PRODUCAO":
+                linha = [partes[0], descricao,'sa-east-1', partes[3], partes[4], 'Shared Instances', partes[1], '40', 'Hours/Week', 'On-Demand', 'General Purpose SSD (gp3)', partes[5], '', '', '2x Daily', '10']
+            elif partes[0].upper() == "PRODUCTION" or partes[0].upper() == "PRODUCAO":
+                linha = [partes[0], descricao,'sa-east-1', partes[3], partes[4], 'Shared Instances', partes[1], '', 'Always On', '1 Yr No Upfront EC2 Instance Savings Plan', 'General Purpose SSD (gp3)', partes[5], '', '', '6x Daily', '20']
+            else: # Outros ambientes
+                linha = [partes[0], descricao,'sa-east-1', partes[3], partes[4], 'Shared Instances', partes[1], '40', 'Hours/Week', 'On-Demand', 'General Purpose SSD (gp3)', partes[5], '', '', '2x Daily', '10']
+                ambiente_adicional.append(partes[0])
+            nova_aba.append(linha)
+ 
+    # Iterar sobre as células da coluna B (Descricao) e remover as aspas
+    for linha in aba_controle.iter_rows(min_row=2, min_col=2, max_col=2):  # Coluna B (Descricao) começando da segunda linha
+        for cell in linha:
+            if cell.value is not None and isinstance(cell.value, str):
+                cell.value = cell.value.replace('"', '')
+ 
+    # Salvar as alterações no arquivo Excel
+    workbook.save(caminho_arquivo)
+ 
+    # Fechar o arquivo Excel
+    workbook.close()
+
 ############################################################
 ############ RECOMENDAÇÃO DE INSTANCE TYPES ################
 ############################################################
- 
+
 def read_instance_types_from_txt(directory_path, file_name):
     file_path = os.path.join(directory_path, file_name)
     with open(file_path, "r") as file:
@@ -377,7 +515,7 @@ def read_instance_types_from_txt(directory_path, file_name):
         x['InstanceType'].startswith('c5')
     ), reverse=True)
     return instance_types_sorted
- 
+
 def extract_ram_and_vcpu(description):
     ram = re.findall(r'(\d+)GB RAM', description)
     vcpu = re.findall(r'(\d+)vCPU', description)
@@ -385,7 +523,21 @@ def extract_ram_and_vcpu(description):
         return int(ram[0]), int(vcpu[0])
     else:
         return None, None
+
+def replace_ram_and_vcpu(description, info_ram, info_cpu):
+    ram = re.findall(r'(\d+)GB RAM', description)
+    vcpu = re.findall(r'(\d+)vCPU', description)
+    if ram and vcpu:
+        old_ram = f"{ram[0]}GB RAM"
+        old_cpu = f"{vcpu[0]}vCPU"
  
+        description = description.replace(old_ram, info_ram)
+        description = description.replace(old_cpu, info_cpu)
+ 
+        return description
+    else:
+        return None, None
+
 def recommend_instance_type(vcpu_needed, ram_needed, instance_types):
     recommended_instance = None
     min_cost = float('inf')
@@ -396,13 +548,15 @@ def recommend_instance_type(vcpu_needed, ram_needed, instance_types):
             cost = ram_available
             if cost < min_cost:
                 min_cost = cost
-                recommended_instance = instance_type['InstanceType']
+                ram = int(round(ram_available, 0))
+                #recommended_instance = instance_type['InstanceType']
+                recommended_instance = f"{instance_type['InstanceType']},{ram}GB RAM,{vcpu_available}vCPU"
     return recommended_instance
- 
+
 ############################################################
 ################### ARQUIVO TEMPLATE #######################
 ############################################################
- 
+
 def ocultar_aba(nome_arquivo, nome_aba):
     # Carregar o arquivo Excel
     wb = load_workbook(nome_arquivo)
@@ -417,27 +571,27 @@ def ocultar_aba(nome_arquivo, nome_aba):
         wb.save(nome_arquivo)
     else:
         print(f'A aba "{nome_aba}" não foi encontrada no arquivo.')
- 
+
 def copiar_arquivo(origem, destino):
     try:
         shutil.copy(origem, destino)
     except IOError as e:
         print(f"Erro ao copiar arquivo: {e}")
- 
+
 def selecionar_arquivo_Template():
     caminho_pasta = "data/template"
     arquivos = os.listdir(caminho_pasta)
     for arquivo in arquivos:
         arquivo_origem = os.path.join(os.getcwd(),caminho_pasta,arquivo)
     return arquivo_origem
- 
+
 def selecionar_destino_Template(sigla):
     caminho_pasta = "siglas"
     arquivo = sigla + "_AWS.xlsx"
     destino = os.path.join(os.getcwd(),caminho_pasta,arquivo)
     os.remove(destino) if os.path.exists(destino) else None
     return destino
- 
+
 def copiar_dados(origem, destino):
     # Carregar o arquivo Excel
     wb = load_workbook(origem)
@@ -467,11 +621,11 @@ def copiar_dados(origem, destino):
         os.remove(destino) if os.path.exists(destino) else None
         show_warning_message("Aviso", f"Informações insuficientes para gerar o Modelo AWS")
         exit(1)
- 
+
 ############################################################
 ####################### ALERTAS ############################
 ############################################################
- 
+
 def show_error_message(title, message):
     app = QApplication.processEvents()
     error_box = QMessageBox()
@@ -481,7 +635,7 @@ def show_error_message(title, message):
     error_box.setStandardButtons(QMessageBox.Ok)
     error_box.exec_()
     QApplication.processEvents()
- 
+
 def show_warning_message(title, message):
     app = QApplication.processEvents()
     warning_box = QMessageBox()
@@ -491,7 +645,7 @@ def show_warning_message(title, message):
     warning_box.setStandardButtons(QMessageBox.Ok)
     warning_box.exec_()
     QApplication.processEvents()
- 
+
 def show_information_message(title, message):
     app = QApplication.processEvents()
     warning_box = QMessageBox()
@@ -501,11 +655,23 @@ def show_information_message(title, message):
     warning_box.setStandardButtons(QMessageBox.Ok)
     warning_box.exec_()
     QApplication.processEvents()
- 
+
+def show_information_message_with_link(title, message, link):
+    msg_box = QMessageBox()
+    msg_box.setIcon(QMessageBox.Information)
+    msg_box.setWindowTitle(title)
+    msg_box.setText(message)
+
+    # Adiciona um botão com o texto "Copiar link"
+    copy_button = msg_box.addButton("Copiar link", QMessageBox.ActionRole)
+    copy_button.clicked.connect(lambda: QApplication.clipboard().setText(link))
+
+    msg_box.exec_()
+
 ############################################################
 ######################### EXEC #############################
 ############################################################
- 
+
 try:
     if sigla:
         caminho_arquivo = selecionar_arquivo()
@@ -581,7 +747,12 @@ try:
             # Obtém os dados das colunas selecionadas após os filtros
             dados_selecionados = dados_filtrados[colunas_selecionadas]
             dados_selecionados = dados_selecionados.drop_duplicates(subset=["NOME"], keep="first")
+            dados_selecionados.loc[:, "vcpu"] = dados_selecionados["vcpu"].fillna(2)
+            dados_selecionados.loc[:, "vcpu"] = dados_selecionados["vcpu"].replace('', 2)
+            dados_selecionados.loc[:, "vcpu"] = dados_selecionados["vcpu"].replace(0, 2)
             dados_selecionados.loc[:, "MEMORIA_RAM"] = dados_selecionados["MEMORIA_RAM"].fillna(4096)
+            dados_selecionados.loc[:, "MEMORIA_RAM"] = dados_selecionados["MEMORIA_RAM"].replace('', 4096)
+            dados_selecionados.loc[:, "MEMORIA_RAM"] = dados_selecionados["MEMORIA_RAM"].replace(0, 4096)
             dados_selecionados.loc[:, "MEMORIA_RAM"] /= 1024
             dados_selecionados.loc[:, "MEMORIA_RAM"] = dados_selecionados.loc[:, "MEMORIA_RAM"].apply(lambda x: math.ceil(x))
             dados_selecionados.loc[:, "STORAGE"] = dados_selecionados["STORAGE"].fillna(150)
@@ -626,7 +797,7 @@ try:
                 # Ler a aba "Controle"
                 abaControle = 'Controle'
                 data_controle = pd.read_excel(novo_caminho_arquivo, sheet_name=abaControle)
-                
+ 
                 # Ler os tipos de instância do arquivo txt
                 directory_path = "data/servers"
                 file_name = "instance_types.txt"
@@ -640,13 +811,34 @@ try:
                     ram_needed, vcpu_needed = extract_ram_and_vcpu(description)
                     if ram_needed is not None and vcpu_needed is not None:
                         recommended_instance_type = recommend_instance_type(vcpu_needed, ram_needed, instance_types)
-                        worksheet.cell(row=index + 2, column=5, value=recommended_instance_type)
+                        #info_instance_type = getinfo_instance_type(recommended_instance_type)
+                        info_configuration = recommended_instance_type.split(',')
+ 
+                        # Definições do instance type
+                        instance_type = info_configuration[0]
+                        info_ram = info_configuration[1]
+                        info_cpu = info_configuration[2]
+ 
+                        #worksheet.cell(row=index + 2, column=5, value=recommended_instance_type)
+ 
+                        # Instance type
+                        worksheet.cell(row=index + 2, column=5, value=instance_type)
+ 
+                        # Nova descrição
+                        new_description = replace_ram_and_vcpu(description, info_ram, info_cpu)
+                        worksheet.cell(row=index + 2, column=2, value=new_description)
  
                 workbook.save(novo_caminho_arquivo)
  
                 show_information_message("Aviso", f"LEMBRETE! Não foram adicionados servidores com as seguintes características: \n\nAMBIENTE: 'Disaster Recovery (DR)' \nFUNÇÃO: 'Banco de Dados'")
  
                 ocultar_aba(novo_caminho_arquivo, novo_nome_aba)
+ 
+                # Verifica as combinações
+                dados_tratados = combinacoes_instancias(novo_caminho_arquivo, "Controle")
+ 
+                # Cria nova aba com os dados tratados
+                criar_aba_com_resultados_tratados(novo_caminho_arquivo, dados_tratados)
  
                 arquivoTemplateAWS = selecionar_arquivo_Template()
                 if arquivoTemplateAWS:
