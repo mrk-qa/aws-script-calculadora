@@ -27,6 +27,10 @@ O script realiza o processo hoje feito de forma manual para gerar a calculadora 
 - Instalar as libs rodando o comando: `pip install -r requirements.txt`
 - Finalizar instalação do playwright incluindo navegadores rodando o comando: `playwright install`
  
+# Build do executável
+
+- Para gerar o build: `python windows.py build`
+
 # Comandos
  
 - Para pegar as recomendações das instâncias na região de São Paulo via API da AWS, rodar o comando: `python data/servers/get_instances.py`
