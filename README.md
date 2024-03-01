@@ -1,4 +1,4 @@
-# Calculadora AWS - NTT DATA
+# Script Calculadora AWS - NTT DATA
  
 <h1 align="left">
     <img width="300px" src="./assets/ntt_logo.png" alt="ntt-data-logo">
@@ -30,7 +30,8 @@ O script realiza o processo hoje feito de forma manual para gerar a calculadora 
 # Comandos
  
 - Para pegar as recomendações das instâncias na região de São Paulo via API da AWS, rodar o comando: `python data/servers/get_instances.py`
-- Para rodar o script e gerar a calculadora: `pytest --headed -s`
+- Para rodar o script e gerar a calculadora: `pytest --headed -s` ou `python calculadora.py`
+- Para gerar o build: `python windows.py build`
  
 ------
  

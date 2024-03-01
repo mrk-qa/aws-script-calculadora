@@ -291,7 +291,6 @@ class EstimatePage:
                 print("\n ------------------------------------------------------------ \n")
  
                 show_warning_message("Aviso", f"ATENÇÃO! Só existem 2 ambientes na sigla {sigla}. \n\nVocê deve estimar os ambientes manualmente conforme necessário")
-                # simpledialog.messagebox.showinfo("Aviso", f"ATENÇÃO! Só existem 2 ambientes na sigla {sigla}. \n Você deve estimar os ambientes manualmente conforme necessário")
  
             else:
                 print("Não foi alterado nada sobre ambientes")
@@ -318,3 +317,5 @@ class EstimatePage:
         
         print(f"Calculadora da sigla {sigla}: " + link)
         print("\n ------------------------------------------------------------ \n")
+
+        show_information_message_with_link("Aviso", f"Calculadora da sigla {sigla} gerada com sucesso\n\nClique no botão abaixo para copiar o link gerado\n", f"{link}")
