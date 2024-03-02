@@ -29,14 +29,14 @@ O script realiza o processo hoje feito de forma manual para gerar a calculadora 
  
 # Build do executável
 
-- Para gerar o build: `python windows.py build`
+- Para gerar o build no windows: `python windows.py build`
+- Para gerar o build no mac: `python mac.py build`
 
 # Comandos
  
 - Para pegar as recomendações das instâncias na região de São Paulo via API da AWS, rodar o comando: `python data/servers/get_instances.py`
 - Para rodar o script e gerar a calculadora: `python calculadora.py`
-- Para gerar o build: `python windows.py build`
  
 ------
  
-*Develop by: Anderson e Marco*
+*Develop by: [Anderson](https://github.com/Andersoncr) e [Marco](https://github.com/mrk-qa) *
