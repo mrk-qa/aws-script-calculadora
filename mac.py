@@ -17,17 +17,16 @@ include_files = [
     ("calculadora.py", "calculadora.py"),
 ]
 
-ntt_icon = os.getcwd() + "/assets/ntt_icone.ico"
+ntt_icon = os.getcwd() + "/assets/ntt_icone.icns"
 
 # Configuração do executável
 setup(
     name="Script Calculadora AWS - NTT DATA",
     version="1.0",
     description="Automação de tarefas para gerar uma calculadora AWS",
-    executables=[Executable("calculadora.py", base="Win32GUI", icon=ntt_icon)],
+    executables=[Executable("calculadora.py", icon=ntt_icon)],
     options={
         "build_exe": {
-            # "packages": installed_packages,
             "include_files": include_files,
             "excludes": excludes
         }
