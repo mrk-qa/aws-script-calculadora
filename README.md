@@ -39,4 +39,4 @@ O script realiza o processo hoje feito de forma manual para gerar a calculadora 
  
 ------
  
-*Develop by: [Anderson](https://github.com/Andersoncr) e [Marco](https://github.com/mrk-qa)*
+*Develop by: [Anderson](https://www.linkedin.com/in/anderson-castro-ribeiro-34b192114/) e [Marco](https://www.linkedin.com/in/mrk-silva/)*
