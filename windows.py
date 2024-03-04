@@ -24,10 +24,9 @@ setup(
     name="Script Calculadora AWS - NTT DATA",
     version="1.0",
     description="Automação de tarefas para gerar uma calculadora AWS",
-    executables=[Executable("calculadora.py", base="Win32GUI", icon=ntt_icon)],
+    executables=[Executable("calculadora.py", base="Win32GUI", icon=ntt_icon, target_name="Script Calculadora AWS.exe")],
     options={
         "build_exe": {
-            # "packages": installed_packages,
             "include_files": include_files,
             "excludes": excludes
         }
