@@ -40,17 +40,16 @@ def selecionar_so_calculadora_sigla():
     
     sigla = comentario_entry.text().upper()
     if sigla:
-        print("\n ------------------------------------------------------------ \n")
-        print("Iniciando automação")
-        print("\nObtendo Sistema Operacional:", so_selecionado)
-        print("\nObtendo Tipo de Calculadora:", tipo_calculadora_selecionado)
-        print("\nObtendo informações da sigla: " + sigla)
-        
-        # Verificar se a opção selecionada é "Calculadora To Be"
         if tipo_calculadora_selecionado == "Calculadora To Be":
             QMessageBox.warning(root, "Aviso", "A opção 'Calculadora To Be' está em desenvolvimento")
         else:
-            root.close()  # Fechar a janela apenas se não for "Calculadora To Be"
+            print("\n ------------------------------------------------------------ \n")
+            print("Iniciando automação")
+            print("\nObtendo Sistema Operacional:", so_selecionado)
+            print("\nObtendo Tipo de Calculadora:", tipo_calculadora_selecionado)
+            print("\nObtendo informações da sigla: " + sigla)
+
+            root.close()
     else:
         QMessageBox.warning(root, "Aviso", "Você precisa preencher uma sigla")
  
