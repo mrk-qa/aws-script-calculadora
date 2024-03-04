@@ -3,7 +3,7 @@ warnings.filterwarnings("ignore", "\nPyarrow", DeprecationWarning)
 warnings.simplefilter("ignore")
  
 from openpyxl import load_workbook
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
  
@@ -104,12 +104,21 @@ radio_button_3 = QRadioButton(opcoes[2])
 radio_button_3.setStyleSheet("font-size: 18px; margin-left: 130px; margin-bottom: 30px;")
 layout.addWidget(radio_button_3, 4, 0)
 
+# Criando um QVBoxLayout para o combobox
+combobox_layout = QVBoxLayout()
+combobox_layout.addStretch() # Adicionando espaço vazio no layout para ajustar a altura do combobox
+ 
 # Adicionando QComboBox ao lado da lista de radio buttons
 combobox = QComboBox()
 combobox.addItem("Calculadora MAP")
 combobox.addItem("Calculadora To Be")
-combobox.setStyleSheet("font-size: 16px; margin-bottom: 40px;")
-layout.addWidget(combobox, 2, 1, len(opcoes), 1, alignment=Qt.AlignLeft | Qt.AlignCenter)  # Adiciona à coluna 1 para alinhar ao lado das radio buttons
+combobox.setStyleSheet("font-size: 16px")
+combobox_layout.addWidget(combobox)
+combobox_layout.addStretch() # Adicionando espaço vazio no layout
+combobox_layout.addStretch() # Adicionando espaço vazio no layout
+combobox_widget = QWidget()
+combobox_widget.setLayout(combobox_layout)
+layout.addWidget(combobox_widget, 2, 1, len(opcoes), 1, alignment=Qt.AlignLeft)
 
 # Campo de entrada de texto
 comentario_entry = QLineEdit(root)
@@ -123,8 +132,13 @@ confirmar_button.clicked.connect(selecionar_so_calculadora_sigla)
 confirmar_button.setStyleSheet("background-color: #007BC4; color: white; margin-bottom: 10px; width: 110px; height: 30px; font-size: 16px;")
 layout.addWidget(confirmar_button, len(opcoes) + 2, 0, 1, 2, alignment=Qt.AlignCenter)
 
-assinatura_label = QLabel("Develop by: Anderson e Marco")
-assinatura_label .setStyleSheet("margin-top: 10px; font-style: italic;")
+# Assinatura com links para o LinkedIn
+assinatura_label = QLabel()
+assinatura_text = "Develop by: <a href=\"https://www.linkedin.com/in/anderson-castro-ribeiro-34b192114/\" style=\"color:blue;\">Anderson</a> e <a href=\"https://www.linkedin.com/in/mrk-silva/\" style=\"color:blue;\">Marco</a>"
+assinatura_label.setOpenExternalLinks(True)  # Para abrir o link em um navegador externo
+assinatura_label.setText(assinatura_text)
+assinatura_label.setStyleSheet("margin-top: 10px; font-style: italic;")
+assinatura_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
 layout.addWidget(assinatura_label, len(opcoes) + 3, 0, 1, 2, alignment=Qt.AlignCenter)
 
 root.setLayout(layout)

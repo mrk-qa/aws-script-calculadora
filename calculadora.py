@@ -1,11 +1,13 @@
-from data.data_processing import sigla
 from playwright.sync_api import Page, sync_playwright
 from pages.bulk_import import *
 from pages.estimate import *
 from pages.template import *
 from screeninfo import get_monitors
 
-sigla = sigla.upper()
+try:
+    from data.data_processing import sigla
+except ImportError:
+    exit(1)
 
 with sync_playwright() as p:
     chromium_path = os.getcwd() + "/browser/chrome/chrome.exe"
