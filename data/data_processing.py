@@ -19,10 +19,14 @@ import pandas as pd
 ################ INTERFACE DO USUÁRIO ######################
 ############################################################
 
+# Variável global para rastrear qual botão foi clicado
+botao_clicado = None
+
 def selecionar_so_calculadora_sigla():
     global sigla
     global tipo_calculadora_selecionado
     global so_selecionado
+    global botao_clicado
 
     # Obtendo o texto do botão de rádio selecionado
     if radio_button_1.isChecked():
@@ -40,18 +44,29 @@ def selecionar_so_calculadora_sigla():
     
     sigla = comentario_entry.text().upper()
     if sigla:
+        botao_clicado = "Confirmar"
         if tipo_calculadora_selecionado == "Calculadora To Be":
             QMessageBox.warning(root, "Aviso", "A opção 'Calculadora To Be' está em desenvolvimento")
+            botao_clicado = "To Be"
         else:
             print("\n ------------------------------------------------------------ \n")
             print("Iniciando automação")
-            print("\nObtendo Sistema Operacional:", so_selecionado)
-            print("\nObtendo Tipo de Calculadora:", tipo_calculadora_selecionado)
+            print("\nObtendo Sistema Operacional: " + so_selecionado)
+            print("\nObtendo Tipo de Calculadora: " + tipo_calculadora_selecionado)
             print("\nObtendo informações da sigla: " + sigla)
 
             root.close()
     else:
         QMessageBox.warning(root, "Aviso", "Você precisa preencher uma sigla")
+
+def on_close(event):
+    # Ação personalizada ao fechar a janela
+    if botao_clicado == "To Be" or botao_clicado == None:
+        reply = QMessageBox.question(root, 'Aviso', 'Tem certeza que deseja fechar?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            exit(1)
+        else:
+            event.ignore()
  
 def ajustar_dimensionamento():
     largura_janela = int(app.primaryScreen().size().width() * 0.4) # 40% da largura da tela
@@ -141,6 +156,10 @@ assinatura_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
 layout.addWidget(assinatura_label, len(opcoes) + 3, 0, 1, 2, alignment=Qt.AlignCenter)
 
 root.setLayout(layout)
+
+# Adicionando o evento de fechar a janela
+root.closeEvent = lambda event: on_close(event)
+
 root.show()
 
 app.exec_()
@@ -881,7 +900,9 @@ try:
  
             else:
                 print("A ação foi cancelada pelo usuário.")
+                exit(1)
         else:
             print("Nenhum arquivo selecionado. A ação foi cancelada pelo usuário.")
+            exit(1)
 except NameError:
     print("Calculadora encerrada pelo usuário.")
