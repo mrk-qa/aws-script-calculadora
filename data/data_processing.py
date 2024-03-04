@@ -75,7 +75,7 @@ def ajustar_dimensionamento():
  
 app = QApplication(sys.argv)
 root = QWidget()
-root.setWindowTitle("Script Calculadora AWS - NTT DATA")
+root.setWindowTitle("Script Calculadora AWS")
 root.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
  
 largura_janela, altura_janela = ajustar_dimensionamento()
@@ -871,7 +871,7 @@ try:
  
                 workbook.save(novo_caminho_arquivo)
  
-                show_information_message("Aviso", f"LEMBRETE! Não foram adicionados servidores com as seguintes características: \n\nAMBIENTE: 'Disaster Recovery (DR)' \nFUNÇÃO: 'Banco de Dados'")
+                show_information_message("Aviso", f"Não foram adicionados servidores com as seguintes características: \n\nAMBIENTE: 'Disaster Recovery (DR)' \nFUNÇÃO: 'Banco de Dados'")
  
                 ocultar_aba(novo_caminho_arquivo, novo_nome_aba)
  
