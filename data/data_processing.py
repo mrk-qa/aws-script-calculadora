@@ -6,9 +6,7 @@ from openpyxl import load_workbook
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
-from win32com.client import Dispatch
 
-import winshell
 import sys
 import os
 import math
@@ -66,23 +64,6 @@ def show_information_message_with_link(title, message, link):
     copy_button.clicked.connect(lambda: QApplication.clipboard().setText(link))
 
     msg_box.exec_()
-
-############################################################
-################## ATALHO DO EXECUTÁVEL  ###################
-############################################################
-
-def create_shortcut(target_path, shortcut_name, start_in):
-    desktop = winshell.desktop()
-    shortcut_path = os.path.join(desktop, shortcut_name)
-    shell = Dispatch('WScript.Shell')
-    shortcut = shell.CreateShortCut(shortcut_path)
-    shortcut.Targetpath = target_path
-    shortcut.WorkingDirectory = start_in  # Definir o diretório de trabalho
-    shortcut.save()
-
-target_path = os.getcwd() + "../Script Calculadora AWS.exe"
-shortcut_name = "Script Calculadora AWS.lnk"
-shortcut_path = os.path.join(winshell.desktop(), shortcut_name)
  
 ############################################################
 ################ INTERFACE DO USUÁRIO ######################
@@ -153,14 +134,6 @@ def ajustar_dimensionamento():
 app = QApplication(sys.argv)
 root = QWidget()
 
-# Verificar se o atalho já existe
-if not os.path.exists(shortcut_path):
-    # Verifica se o arquivo .exe existe
-    if os.path.exists(target_path):
-        # Se o atalho não existir, criar
-        create_shortcut(target_path, shortcut_name, os.getcwd())
-        show_information_message("Aviso", f"Foi criado um atalho na área de trabalho")
-        
 root.setWindowTitle("Script Calculadora AWS")
 root.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
  
@@ -186,25 +159,32 @@ label_informativa = QLabel("Selecione as opções de S.O, tipo de calculadora e 
 label_informativa.setStyleSheet("font-size: 14px")
 layout.addWidget(label_informativa, 1, 0, 1, 2, alignment=Qt.AlignCenter)
 
-# Lista de radio buttons
+# # Lista de radio buttons
 opcoes = ["Windows", "Linux", "Windows e Linux"]
 
-# Botão de radio 1
+# Criando um QVBoxLayout para os radio buttons
+radio_button_layout = QVBoxLayout()
+
+# Adicionando os radio buttons ao layout
 radio_button_1 = QRadioButton(opcoes[0])
-radio_button_1.setStyleSheet("font-size: 18px; margin-left: 130px;")
-layout.addWidget(radio_button_1, 3, 0)
+radio_button_1.setStyleSheet("font-size: 18px; margin-left: 130px; margin-top: 15px;")
+radio_button_layout.addWidget(radio_button_1)
 
-# Botão de radio 2
 radio_button_2 = QRadioButton(opcoes[1])
-radio_button_2.setStyleSheet("font-size: 18px; margin-left: 130px; margin-bottom: 100px;")
-layout.addWidget(radio_button_2, 4, 0)
+radio_button_2.setStyleSheet("font-size: 18px; margin-left: 130px; margin-top: 15px;")
+radio_button_layout.addWidget(radio_button_2)
 
-# Botão de radio 3
 radio_button_3 = QRadioButton(opcoes[2])
-radio_button_3.setStyleSheet("font-size: 18px; margin-left: 130px; margin-bottom: 30px;")
-layout.addWidget(radio_button_3, 4, 0)
+radio_button_3.setStyleSheet("font-size: 18px; margin-left: 130px; margin-top: 15px;")
+radio_button_layout.addWidget(radio_button_3)
 
-# Criando um QVBoxLayout para o combobox
+# Adicionando espaço vazio
+radio_button_layout.addStretch()
+
+# Adicionando o layout de radio buttons ao layout principal
+layout.addLayout(radio_button_layout, 4, 0)
+
+# # Criando um QVBoxLayout para o combobox
 combobox_layout = QVBoxLayout()
 combobox_layout.addStretch() # Adicionando espaço vazio no layout para ajustar a altura do combobox
  
@@ -212,7 +192,7 @@ combobox_layout.addStretch() # Adicionando espaço vazio no layout para ajustar 
 combobox = QComboBox()
 combobox.addItem("Calculadora MAP")
 combobox.addItem("Calculadora To Be")
-combobox.setStyleSheet("font-size: 16px")
+combobox.setStyleSheet("font-size: 16px;")
 combobox_layout.addWidget(combobox)
 combobox_layout.addStretch() # Adicionando espaço vazio no layout
 combobox_layout.addStretch() # Adicionando espaço vazio no layout
@@ -220,26 +200,71 @@ combobox_widget = QWidget()
 combobox_widget.setLayout(combobox_layout)
 layout.addWidget(combobox_widget, 2, 1, len(opcoes), 1, alignment=Qt.AlignLeft)
 
+# Criando um QVBoxLayout para o campo de entrada de texto
+entry_layout = QVBoxLayout()
+
+# Adicionando espaço vazio
+entry_layout.addStretch()
+
 # Campo de entrada de texto
 comentario_entry = QLineEdit(root)
 comentario_entry.setPlaceholderText("Digite a sigla")
-comentario_entry.setStyleSheet("margin-top: 100px; width: 110px; height: 30px; font-size: 16px;")
-layout.addWidget(comentario_entry, len(opcoes) + 1, 0, 1, 2, alignment=Qt.AlignCenter)
+comentario_entry.setStyleSheet("width: 110px; height: 30px; font-size: 16px; border-radius: 5px;")
+layout.addWidget(comentario_entry, len(opcoes) + 2, 0, 1, 2, alignment=Qt.AlignCenter)
 
 # Botão de confirmação
 confirmar_button = QPushButton('Confirmar', root)
 confirmar_button.clicked.connect(selecionar_so_calculadora_sigla)
-confirmar_button.setStyleSheet("background-color: #007BC4; color: white; margin-bottom: 10px; width: 110px; height: 30px; font-size: 16px;")
-layout.addWidget(confirmar_button, len(opcoes) + 2, 0, 1, 2, alignment=Qt.AlignCenter)
+confirmar_button.setStyleSheet("background-color: #007BC4; color: white; width: 110px; height: 30px; font-size: 16px; border-radius: 5px;")
+layout.addWidget(confirmar_button, len(opcoes) + 3, 0, 1, 2, alignment=Qt.AlignCenter)
 
 # Assinatura com links para o LinkedIn
 assinatura_label = QLabel()
 assinatura_text = "Develop by: <a href=\"https://www.linkedin.com/in/anderson-castro-ribeiro-34b192114/\" style=\"color:blue;\">Anderson</a> e <a href=\"https://www.linkedin.com/in/mrk-silva/\" style=\"color:blue;\">Marco</a>"
 assinatura_label.setOpenExternalLinks(True)  # Para abrir o link em um navegador externo
 assinatura_label.setText(assinatura_text)
-assinatura_label.setStyleSheet("margin-top: 10px; font-style: italic;")
+assinatura_label.setStyleSheet("font-size: 14px;")
 assinatura_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
-layout.addWidget(assinatura_label, len(opcoes) + 3, 0, 1, 2, alignment=Qt.AlignCenter)
+layout.addWidget(assinatura_label, len(opcoes) + 4, 0, 1, 2, alignment=Qt.AlignCenter)
+
+# Label de ajuda
+ajuda_label = QLabel("Ajuda", root)
+ajuda_label.setStyleSheet("font-size: 12px; color: white; background-color: #007BC4; padding: 5px; border-radius: 5px;")
+ajuda_label.setAlignment(Qt.AlignRight | Qt.AlignBottom)
+ajuda_label.setCursor(Qt.PointingHandCursor)
+
+def on_help_clicked():
+    help_window = QMessageBox()
+    help_window.setWindowTitle("Instruções")
+    help_window.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+    help_window.setIcon(QMessageBox.Information)
+
+    # Mensagem principal em fonte maior
+    main_message = "<h2>Passo a passo para a utilização do script</h2>"
+    main_message += "<br><p style='font-size: 14px;'>1 - Selecione o sistema operacional que queira filtrar da sigla</p>"
+    main_message += "<p style='font-size: 14px;'>2 - Selecione o tipo de calculadora</p>"
+    main_message += "<p style='font-size: 14px;'>3 - Preencha a sigla</p>"
+    main_message += "<p style='font-size: 14px;'>4 - Clique em 'confirmar'</p>"
+    main_message += "<p style='font-size: 14px;'>5 - A seguir irá abrir a seleção de arquivos, você deve selecionar o arquivo de dados contendo os servidores</p>"
+    main_message += "<p style='font-size: 14px;'>6 - Serão exibidas as informações sobre os dados que serão tratados</p>"
+    main_message += "<p style='font-size: 14px;'>7 - Iniciará a automação utilizando o navegador (lembre-se de deixar o navegador em foco na tela até finalizar a automação)</p>"
+    main_message += "<p style='font-size: 14px;'>8 - Ao final, clique no botão para copiar o link da calculadora gerada</p>"
+
+    # Adicionando uma linha extra de espaço
+    main_message += "<br>"
+
+    # Mensagem adicional em fonte menor
+    additional_message = "<p style='font-size: 14px;'>Para mais detalhes, consulte os desenvolvedores.</p>"
+
+    # Combine as mensagens
+    full_message = main_message + additional_message
+
+    help_window.setText(full_message)
+    help_window.setStandardButtons(QMessageBox.Ok)
+    help_window.exec_()
+
+ajuda_label.mousePressEvent = lambda event: on_help_clicked()
+layout.addWidget(ajuda_label, len(opcoes) + 4, 1, alignment=Qt.AlignRight | Qt.AlignBottom)
 
 root.setLayout(layout)
 

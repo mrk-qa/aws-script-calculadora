@@ -1,8 +1,7 @@
-from playwright.sync_api import Page, sync_playwright
+from playwright.sync_api import sync_playwright
 from pages.bulk_import import *
 from pages.estimate import *
 from pages.template import *
-from screeninfo import get_monitors
 
 try:
     from data.data_processing import sigla
@@ -10,15 +9,12 @@ except ImportError:
     exit(1)
 
 with sync_playwright() as p:
-    chromium_path = os.getcwd() + "/browser/chrome/chrome.exe"
-    monitor = get_monitors()[0]
-    width, height = monitor.width, monitor.height
-    
-    browser = p.chromium.launch(executable_path=chromium_path, headless=False)
-    page = browser.new_page()
+    chromium_path = os.path.abspath("browser/chrome/chrome.exe")
+    browser = p.chromium.launch(executable_path=chromium_path, headless=False, args=["--start-maximized"])
+    context = browser.new_context(no_viewport=True)
+    page = context.new_page()
     page.set_default_timeout(60000)
     page.set_default_navigation_timeout(60000)
-    page.set_viewport_size({ "width": width, "height": height })
     page.goto("https://calculator.aws/#/estimate?id=a70ac3549ad99f2b810f24470529314d4c9420d2")
 
     template_page = TemplatePage(page)
