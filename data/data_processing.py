@@ -6,7 +6,9 @@ from openpyxl import load_workbook
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
- 
+from win32com.client import Dispatch
+
+import winshell
 import sys
 import os
 import math
@@ -14,6 +16,73 @@ import unicodedata
 import re
 import shutil
 import pandas as pd
+
+############################################################
+####################### ALERTAS ############################
+############################################################
+
+def show_error_message(title, message):
+    app = QApplication.processEvents()
+    error_box = QMessageBox()
+    error_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+    error_box.setIcon(QMessageBox.Critical)
+    error_box.setWindowTitle(title)
+    error_box.setText(message)
+    error_box.setStandardButtons(QMessageBox.Ok)
+    error_box.exec_()
+    QApplication.processEvents()
+
+def show_warning_message(title, message):
+    app = QApplication.processEvents()
+    warning_box = QMessageBox()
+    warning_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+    warning_box.setIcon(QMessageBox.Warning)
+    warning_box.setWindowTitle(title)
+    warning_box.setText(message)
+    warning_box.setStandardButtons(QMessageBox.Ok)
+    warning_box.exec_()
+    QApplication.processEvents()
+
+def show_information_message(title, message):
+    app = QApplication.processEvents()
+    information = QMessageBox()
+    information.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+    information.setIcon(QMessageBox.Information)
+    information.setWindowTitle(title)
+    information.setText(message)
+    information.setStandardButtons(QMessageBox.Ok)
+    information.exec_()
+    QApplication.processEvents()
+
+def show_information_message_with_link(title, message, link):
+    msg_box = QMessageBox()
+    msg_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+    msg_box.setIcon(QMessageBox.Information)
+    msg_box.setWindowTitle(title)
+    msg_box.setText(message)
+
+    # Adiciona um botão com o texto "Copiar link"
+    copy_button = msg_box.addButton("Copiar link", QMessageBox.ActionRole)
+    copy_button.clicked.connect(lambda: QApplication.clipboard().setText(link))
+
+    msg_box.exec_()
+
+############################################################
+################## ATALHO DO EXECUTÁVEL  ###################
+############################################################
+
+def create_shortcut(target_path, shortcut_name, start_in):
+    desktop = winshell.desktop()
+    shortcut_path = os.path.join(desktop, shortcut_name)
+    shell = Dispatch('WScript.Shell')
+    shortcut = shell.CreateShortCut(shortcut_path)
+    shortcut.Targetpath = target_path
+    shortcut.WorkingDirectory = start_in  # Definir o diretório de trabalho
+    shortcut.save()
+
+target_path = os.getcwd() + "../Script Calculadora AWS.exe"
+shortcut_name = "Script Calculadora AWS.lnk"
+shortcut_path = os.path.join(winshell.desktop(), shortcut_name)
  
 ############################################################
 ################ INTERFACE DO USUÁRIO ######################
@@ -83,6 +152,13 @@ def ajustar_dimensionamento():
  
 app = QApplication(sys.argv)
 root = QWidget()
+
+# Verificar se o atalho já existe
+if not os.path.exists(shortcut_path):
+    # Se o atalho não existir, criar
+    create_shortcut(target_path, shortcut_name, os.getcwd())
+    show_information_message("Aviso", f"Foi criado um atalho na área de trabalho")
+
 root.setWindowTitle("Script Calculadora AWS")
 root.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
  
@@ -666,56 +742,6 @@ def copiar_dados(origem, destino):
         os.remove(destino) if os.path.exists(destino) else None
         show_warning_message("Aviso", f"Informações insuficientes para gerar o Modelo AWS")
         exit(1)
-
-############################################################
-####################### ALERTAS ############################
-############################################################
-
-def show_error_message(title, message):
-    app = QApplication.processEvents()
-    error_box = QMessageBox()
-    error_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
-    error_box.setIcon(QMessageBox.Critical)
-    error_box.setWindowTitle(title)
-    error_box.setText(message)
-    error_box.setStandardButtons(QMessageBox.Ok)
-    error_box.exec_()
-    QApplication.processEvents()
-
-def show_warning_message(title, message):
-    app = QApplication.processEvents()
-    warning_box = QMessageBox()
-    warning_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
-    warning_box.setIcon(QMessageBox.Warning)
-    warning_box.setWindowTitle(title)
-    warning_box.setText(message)
-    warning_box.setStandardButtons(QMessageBox.Ok)
-    warning_box.exec_()
-    QApplication.processEvents()
-
-def show_information_message(title, message):
-    app = QApplication.processEvents()
-    information = QMessageBox()
-    information.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
-    information.setIcon(QMessageBox.Information)
-    information.setWindowTitle(title)
-    information.setText(message)
-    information.setStandardButtons(QMessageBox.Ok)
-    information.exec_()
-    QApplication.processEvents()
-
-def show_information_message_with_link(title, message, link):
-    msg_box = QMessageBox()
-    msg_box.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
-    msg_box.setIcon(QMessageBox.Information)
-    msg_box.setWindowTitle(title)
-    msg_box.setText(message)
-
-    # Adiciona um botão com o texto "Copiar link"
-    copy_button = msg_box.addButton("Copiar link", QMessageBox.ActionRole)
-    copy_button.clicked.connect(lambda: QApplication.clipboard().setText(link))
-
-    msg_box.exec_()
 
 ############################################################
 ######################### EXEC #############################
