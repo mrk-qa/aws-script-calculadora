@@ -61,9 +61,17 @@ def selecionar_so_calculadora_sigla():
 
 def on_close(event):
     # Ação personalizada ao fechar a janela
-    if botao_clicado == "To Be" or botao_clicado == None:
-        reply = QMessageBox.question(root, 'Aviso', 'Tem certeza que deseja fechar?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if reply == QMessageBox.Yes:
+    if botao_clicado == "To Be" or botao_clicado is None:
+        reply = QMessageBox()
+        reply.setWindowTitle('Aviso')
+        reply.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+        reply.setText('Tem certeza que deseja fechar?')
+        reply.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        reply.button(QMessageBox.Yes).setText('Sim')
+        reply.button(QMessageBox.No).setText('Não')
+        reply.setIcon(QMessageBox.Question)
+
+        if reply.exec() == QMessageBox.Yes:
             exit(1)
         else:
             event.ignore()
@@ -801,7 +809,7 @@ try:
             dados_selecionados.loc[:, "STORAGE"] = dados_selecionados["STORAGE"].apply(lambda x: math.ceil(x))
  
             if (dados_selecionados["STORAGE"] == 0).any():
-                show_warning_message("Aviso", f"Há servidores com dados == 0 (zero) no STORAGE da sigla: {sigla}. \n\nPor favor verifique no CMDB a quantidade de STORAGE do servidor. \n\nLink do CMDB: https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module")
+                show_information_message_with_link("Aviso", f"Há servidores com dados == 0 (zero) no STORAGE da sigla: {sigla}. \n\nPor favor verifique no CMDB a quantidade de STORAGE do servidor. \n\nLink do CMDB: https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module", f"https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module")
                 print(f"\n Há servidores com dados == 0 (zero) no STORAGE da sigla: {sigla}. Por favor verifique no CMDB a quantidade de STORAGE do servidor. \n \nLink do CMDB: https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module")
  
             # Cria uma nova planilha com os dados selecionados
