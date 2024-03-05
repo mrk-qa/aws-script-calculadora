@@ -14,6 +14,7 @@ include_files = [
     ("data", "data"),
     ("siglas", "siglas"),
     ("pages", "pages"),
+    ("dados_servidores_teste.xlsx", "dados_servidores_teste.xlsx"),
     ("calculadora.py", "calculadora.py"),
 ]
 
