@@ -155,10 +155,12 @@ root = QWidget()
 
 # Verificar se o atalho já existe
 if not os.path.exists(shortcut_path):
-    # Se o atalho não existir, criar
-    create_shortcut(target_path, shortcut_name, os.getcwd())
-    show_information_message("Aviso", f"Foi criado um atalho na área de trabalho")
-
+    # Verifica se o arquivo .exe existe
+    if os.path.exists(target_path):
+        # Se o atalho não existir, criar
+        create_shortcut(target_path, shortcut_name, os.getcwd())
+        show_information_message("Aviso", f"Foi criado um atalho na área de trabalho")
+        
 root.setWindowTitle("Script Calculadora AWS")
 root.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
  
