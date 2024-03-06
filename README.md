@@ -29,8 +29,7 @@ O script realiza o processo hoje feito de forma manual para gerar a calculadora 
  
 # Build do executável
 
-- Para gerar o build no windows: `python windows.py build`
-- Para gerar o build no mac: `python mac.py build`
+- Para gerar o build no windows: `python setup.py build`
 
 # Comandos
  
