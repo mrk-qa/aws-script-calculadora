@@ -1,5 +1,36 @@
 from cx_Freeze import setup, Executable
 import os
+import pyautogui
+import subprocess
+import time
+
+############################################################
+############## EXPORTAÇÃO DE DADOS DO BROWSER ##############
+############################################################
+
+# Verificar se existe a pasta browser
+if not os.path.exists("browser"):
+    # Nome do arquivo autoextraível
+    arquivo_autoextraivel = "browser.exe"
+
+    # Executar o arquivo autoextraível
+    processo = subprocess.Popen(arquivo_autoextraivel)
+
+    # Esperar um segundo para garantir que a janela apareça
+    time.sleep(1)
+
+    # Clicar diretamente no botão "Extract"
+    pyautogui.press('enter')
+
+    # Minimizar a janela ativa usando a combinação de teclas Win + ↓
+    pyautogui.hotkey('win', 'down')
+    
+    # Esperar até que o processo de descompactação termine
+    processo.wait()
+
+############################################################
+################## CRIAÇAO DO EXECUTÁVEL ###################
+############################################################
 
 excludes = [
     "tkinter",

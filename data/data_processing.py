@@ -14,6 +14,9 @@ import unicodedata
 import re
 import shutil
 import pandas as pd
+import pyautogui
+import subprocess
+import time
 
 ############################################################
 ####################### ALERTAS ############################
@@ -64,6 +67,29 @@ def show_information_message_with_link(title, message, link):
     copy_button.clicked.connect(lambda: QApplication.clipboard().setText(link))
 
     msg_box.exec_()
+    
+############################################################
+############## EXPORTAÇÃO DE DADOS DO BROWSER ##############
+############################################################
+
+if not os.path.exists("browser"):
+    # Nome do arquivo autoextraível
+    arquivo_autoextraivel = "browser.exe"
+
+    # Executar o arquivo autoextraível
+    processo = subprocess.Popen(arquivo_autoextraivel)
+
+    # Esperar um segundo para garantir que a janela apareça
+    time.sleep(1)
+
+    # Clicar diretamente no botão "Extract"
+    pyautogui.press('enter')
+
+    # Minimizar a janela ativa usando a combinação de teclas Win + ↓
+    pyautogui.hotkey('win', 'down')
+
+    # Esperar a extração finalizar
+    processo.wait()
  
 ############################################################
 ################ INTERFACE DO USUÁRIO ######################
@@ -413,7 +439,7 @@ def organizar_colunas(caminho_arquivo, aba):
     planilha_original['DESCRICAO'] = planilha_original.apply(lambda row: f"{row['DESCRICAO']} {row['MEMORIA']}GB RAM {row['CPU']}vCPU ({row['FUNCAO']})", axis=1)
  
     # Salva as alterações no arquivo Excel
-    planilha_original.to_excel(novo_caminho_arquivo, sheet_name=aba, index=False)
+    planilha_original.to_excel(caminho_arquivo, sheet_name=aba, index=False)
 
 def combinacoes_configuracoes(caminho_arquivo, aba):
     # Carregar a planilha Excel
@@ -570,7 +596,6 @@ def combinacoes_instancias(caminho_arquivo, aba):
             # Verificar se existem combinações
             if quantidade > 1:
                 nova_qtde_maquinas = qtde_maquinas + quantidade
-                # nova_qtde_maquinas = f"{nova_qtde_maquinas} x"
                 descricao = descricao.replace(f"{qtde_maquinas} x", f"{nova_qtde_maquinas} x")
  
                 return f"{grupo};{nova_qtde_maquinas};{descricao};{so};{instancia};{max_storage}"
@@ -697,7 +722,6 @@ def recommend_instance_type(vcpu_needed, ram_needed, instance_types):
             if cost < min_cost:
                 min_cost = cost
                 ram = int(round(ram_available, 0))
-                #recommended_instance = instance_type['InstanceType']
                 recommended_instance = f"{instance_type['InstanceType']},{ram}GB RAM,{vcpu_available}vCPU"
     return recommended_instance
 
@@ -913,15 +937,12 @@ try:
                     ram_needed, vcpu_needed = extract_ram_and_vcpu(description)
                     if ram_needed is not None and vcpu_needed is not None:
                         recommended_instance_type = recommend_instance_type(vcpu_needed, ram_needed, instance_types)
-                        #info_instance_type = getinfo_instance_type(recommended_instance_type)
                         info_configuration = recommended_instance_type.split(',')
  
                         # Definições do instance type
                         instance_type = info_configuration[0]
                         info_ram = info_configuration[1]
                         info_cpu = info_configuration[2]
- 
-                        #worksheet.cell(row=index + 2, column=5, value=recommended_instance_type)
  
                         # Instance type
                         worksheet.cell(row=index + 2, column=5, value=instance_type)
