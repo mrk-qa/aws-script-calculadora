@@ -42,6 +42,15 @@ class EstimatePage:
                 self.page.wait_for_timeout(3000)
  
                 environment.click()
+
+                preferences = self.page.locator("//button[@aria-label='Preferences']")
+                preferences.click()
+
+                check_50_rows = self.page.locator("//div[@role='radiogroup']/span[3]//input")
+                check_50_rows.check()
+
+                confirm = self.page.locator("//button/span[contains(text(), 'Confirm')]")
+                confirm.click()
             
                 resources = self.page.query_selector_all("//tr[@data-selection-item='item']")
                 qtde_resources = len(resources)
@@ -96,7 +105,7 @@ class EstimatePage:
                     
                     for webserver in each_webservers:
                         describe_server = webserver.inner_text()
-                        count_webservers += describe_server.count("WEB SERVERS")
+                        count_webservers += describe_server.count("WEB SERVERS") or describe_server.count("WEBSERVERS")
  
                     w += 1
  
@@ -238,7 +247,7 @@ class EstimatePage:
  
                 show_warning_message("Aviso", f"ATENÇÃO! Só existe o ambiente {environment_name} na sigla {sigla}. \n\nVocê deve estimar os ambientes manualmente conforme necessário")
  
-            elif homologation.is_visible() and qtde_environments == 2:
+            elif homologation.is_visible() and production.is_visible() and qtde_environments == 2:
                 print("Criando ambiente DEVELOPMENT \n")
                 select_environment_homol = self.page.locator("//label[@aria-label='Select service(s) to perform actions Select Homologation']")
                 select_environment_homol.click()
@@ -262,7 +271,7 @@ class EstimatePage:
                 print("Ambiente DEVELOPMENT foi criado com sucesso")
                 print("\n ------------------------------------------------------------ \n")
  
-            elif development.is_visible() and qtde_environments == 2:
+            elif development.is_visible() and production.is_visible() and qtde_environments == 2:
                 print("Criando ambiente HOMOLOGATION \n")
                 select_environment_dev = self.page.locator("//label[@aria-label='Select service(s) to perform actions Select Development']")
                 select_environment_dev.click()
@@ -286,11 +295,11 @@ class EstimatePage:
                 print("Ambiente HOMOLOGATION foi criado com sucesso")
                 print("\n ------------------------------------------------------------ \n")
  
-            elif production.is_disabled() and qtde_environments == 2:
+            elif not production.is_visible() and qtde_environments == 2:
                 print(f"ATENÇÃO! Só existem 2 ambientes na sigla {sigla}. \n Você deve estimar os ambientes manualmente conforme necessário")
                 print("\n ------------------------------------------------------------ \n")
  
-                show_warning_message("Aviso", f"ATENÇÃO! Só existem 2 ambientes na sigla {sigla}. \n\nVocê deve estimar os ambientes manualmente conforme necessário")
+                show_warning_message("Aviso", f"ATENÇÃO! Só existem 2 ambientes na sigla {sigla}. \n\nVocê deve estimar os ambientes restantes manualmente conforme necessário")
  
             else:
                 print("Não foi alterado nada sobre ambientes")
