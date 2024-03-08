@@ -3,9 +3,9 @@ warnings.filterwarnings("ignore", "\nPyarrow", DeprecationWarning)
 warnings.simplefilter("ignore")
  
 from openpyxl import load_workbook
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox, QVBoxLayout, QMainWindow, QProgressBar
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 
 import sys
 import os
@@ -193,15 +193,15 @@ radio_button_layout = QVBoxLayout()
 
 # Adicionando os radio buttons ao layout
 radio_button_1 = QRadioButton(opcoes[0])
-radio_button_1.setStyleSheet("font-size: 18px; margin-left: 270px; margin-top: 25px;")
+radio_button_1.setStyleSheet("font-size: 18px; margin-left: 265px; margin-top: 20px;")
 radio_button_layout.addWidget(radio_button_1)
 
 radio_button_2 = QRadioButton(opcoes[1])
-radio_button_2.setStyleSheet("font-size: 18px; margin-left: 270px; margin-top: 25px;")
+radio_button_2.setStyleSheet("font-size: 18px; margin-left: 265px; margin-top: 20px;")
 radio_button_layout.addWidget(radio_button_2)
 
 radio_button_3 = QRadioButton(opcoes[2])
-radio_button_3.setStyleSheet("font-size: 18px; margin-left: 270px; margin-top: 25px;")
+radio_button_3.setStyleSheet("font-size: 18px; margin-left: 265px; margin-top: 20px;")
 radio_button_layout.addWidget(radio_button_3)
 
 # Adicionando espaço vazio
@@ -980,6 +980,41 @@ try:
                 print(f"Tratamento de dados concluído com sucesso. \n\nOs servidores são {soPesquisa}.")
  
                 print("\n ------------------------------------------------------------ \n")
+
+                # Cria a janela do splash screen
+                splash_screen = QMainWindow()
+                splash_screen.setWindowTitle("Carregando...")
+                splash_screen.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+                splash_screen.setFixedSize(300, 100)
+
+                # Cria a barra de progresso e define sua posição e tamanho
+                progress_bar = QProgressBar(splash_screen)
+                progress_bar.setGeometry(50, 40, 200, 20)
+
+                # Define o valor inicial da barra de progresso como 0
+                progress_bar.setValue(0)
+
+                # Mostra o splash screen
+                splash_screen.show()
+
+                # Função para atualizar o progresso da barra
+                def update_progress():
+                    progress_bar.setValue(progress_bar.value() + 2)  # Incrementa o valor da barra em 1 a cada intervalo de tempo
+                    print("Atualizando progresso... Valor atual:", progress_bar.value())
+                    if progress_bar.value() >= 100:  # Verifica se o progresso atingiu 100%
+                        timer.stop()  # Para o temporizador
+                        print("Carregamento concluído!")
+                        print("\n ------------------------------------------------------------ \n")
+
+                        splash_screen.close()  # Fecha a aplicação
+
+                # Cria e configura o temporizador para chamar a função update_progress a cada intervalo de tempo
+                timer = QTimer()
+                timer.timeout.connect(update_progress)
+                timer.start(100)  # Intervalo de tempo em milissegundos
+
+                # Inicia a execução da aplicação Qt
+                app.exec_()
  
             else:
                 print("A ação foi cancelada pelo usuário.")
