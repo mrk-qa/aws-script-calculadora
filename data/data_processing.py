@@ -100,7 +100,7 @@ botao_clicado = None
 
 def selecionar_so_calculadora_sigla():
     global sigla
-    global tipo_calculadora_selecionado
+    # global tipo_calculadora_selecionado
     global so_selecionado
     global botao_clicado
 
@@ -116,22 +116,22 @@ def selecionar_so_calculadora_sigla():
         return
     
     # Obtendo o texto selecionado do combobox
-    tipo_calculadora_selecionado = combobox.currentText()
+    # tipo_calculadora_selecionado = combobox.currentText()
     
     sigla = comentario_entry.text().upper()
     if sigla:
         botao_clicado = "Confirmar"
-        if tipo_calculadora_selecionado == "Calculadora To Be":
-            QMessageBox.warning(root, "Aviso", "A opção 'Calculadora To Be' está em desenvolvimento")
-            botao_clicado = "To Be"
-        else:
-            print("\n ------------------------------------------------------------ \n")
-            print("Iniciando automação")
-            print("\nObtendo Sistema Operacional: " + so_selecionado)
-            print("\nObtendo Tipo de Calculadora: " + tipo_calculadora_selecionado)
-            print("\nObtendo informações da sigla: " + sigla)
+        # if tipo_calculadora_selecionado == "Calculadora To Be":
+        #     QMessageBox.warning(root, "Aviso", "A opção 'Calculadora To Be' está em desenvolvimento")
+        #     botao_clicado = "To Be"
 
-            root.close()
+        print("\n ------------------------------------------------------------ \n")
+        print("Iniciando automação")
+        print("\nObtendo Sistema Operacional: " + so_selecionado)
+        # print("\nObtendo Tipo de Calculadora: " + tipo_calculadora_selecionado)
+        print("\nObtendo informações da sigla: " + sigla)
+
+        root.close()
     else:
         QMessageBox.warning(root, "Aviso", "Você precisa preencher uma sigla")
 
@@ -193,15 +193,15 @@ radio_button_layout = QVBoxLayout()
 
 # Adicionando os radio buttons ao layout
 radio_button_1 = QRadioButton(opcoes[0])
-radio_button_1.setStyleSheet("font-size: 18px; margin-left: 130px; margin-top: 15px;")
+radio_button_1.setStyleSheet("font-size: 18px; margin-left: 270px; margin-top: 25px;")
 radio_button_layout.addWidget(radio_button_1)
 
 radio_button_2 = QRadioButton(opcoes[1])
-radio_button_2.setStyleSheet("font-size: 18px; margin-left: 130px; margin-top: 15px;")
+radio_button_2.setStyleSheet("font-size: 18px; margin-left: 270px; margin-top: 25px;")
 radio_button_layout.addWidget(radio_button_2)
 
 radio_button_3 = QRadioButton(opcoes[2])
-radio_button_3.setStyleSheet("font-size: 18px; margin-left: 130px; margin-top: 15px;")
+radio_button_3.setStyleSheet("font-size: 18px; margin-left: 270px; margin-top: 25px;")
 radio_button_layout.addWidget(radio_button_3)
 
 # Adicionando espaço vazio
@@ -210,21 +210,21 @@ radio_button_layout.addStretch()
 # Adicionando o layout de radio buttons ao layout principal
 layout.addLayout(radio_button_layout, 4, 0)
 
-# # Criando um QVBoxLayout para o combobox
-combobox_layout = QVBoxLayout()
-combobox_layout.addStretch() # Adicionando espaço vazio no layout para ajustar a altura do combobox
+# # # Criando um QVBoxLayout para o combobox
+# combobox_layout = QVBoxLayout()
+# combobox_layout.addStretch() # Adicionando espaço vazio no layout para ajustar a altura do combobox
  
-# Adicionando QComboBox ao lado da lista de radio buttons
-combobox = QComboBox()
-combobox.addItem("Calculadora MAP")
-combobox.addItem("Calculadora To Be")
-combobox.setStyleSheet("font-size: 16px;")
-combobox_layout.addWidget(combobox)
-combobox_layout.addStretch() # Adicionando espaço vazio no layout
-combobox_layout.addStretch() # Adicionando espaço vazio no layout
-combobox_widget = QWidget()
-combobox_widget.setLayout(combobox_layout)
-layout.addWidget(combobox_widget, 2, 1, len(opcoes), 1, alignment=Qt.AlignLeft)
+# # Adicionando QComboBox ao lado da lista de radio buttons
+# combobox = QComboBox()
+# combobox.addItem("Calculadora MAP")
+# combobox.addItem("Calculadora To Be")
+# combobox.setStyleSheet("font-size: 16px;")
+# combobox_layout.addWidget(combobox)
+# combobox_layout.addStretch() # Adicionando espaço vazio no layout
+# combobox_layout.addStretch() # Adicionando espaço vazio no layout
+# combobox_widget = QWidget()
+# combobox_widget.setLayout(combobox_layout)
+# layout.addWidget(combobox_widget, 2, 1, len(opcoes), 1, alignment=Qt.AlignLeft)
 
 # Criando um QVBoxLayout para o campo de entrada de texto
 entry_layout = QVBoxLayout()
@@ -267,6 +267,7 @@ def on_help_clicked():
 
     # Mensagem principal em fonte maior
     main_message = "<h2>Passo a passo para a utilização do script</h2>"
+    main_message += "<p style='font-size: 12px; color: gray'>Atenção! Antes de executar o script, certifique-se de que o diretório <span style='color: red;'><b>NÃO SEJA</b></span> dentro do Microsoft OneDrive</p>"
     main_message += "<br><p style='font-size: 14px;'>1 - Selecione o sistema operacional que queira filtrar da sigla</p>"
     main_message += "<p style='font-size: 14px;'>2 - Selecione o tipo de calculadora</p>"
     main_message += "<p style='font-size: 14px;'>3 - Preencha a sigla</p>"
