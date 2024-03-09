@@ -43,6 +43,10 @@ class EstimatePage:
  
                 environment.click()
 
+                notification = self.page.locator("//button[@aria-label='Close notification']")
+                if notification.is_visible():
+                    notification.click()
+
                 preferences = self.page.locator("//button[@aria-label='Preferences']")
                 preferences.click()
 
@@ -320,11 +324,12 @@ class EstimatePage:
         iagree.click()
  
         self.page.wait_for_timeout(7000)
- 
+        global link
         copy_link = self.page.locator(".save-share-clipboard-wrapper div:first-child input").get_attribute("value")
         link = copy_link
         
         print(f"Calculadora da sigla {sigla}: " + link)
         print("\n ------------------------------------------------------------ \n")
 
-        show_information_message_with_link("Aviso", f"Calculadora da sigla {sigla} gerada com sucesso\n\nClique no botão abaixo para copiar o link gerado\n", f"{link}")
+    def link(self):
+        show_information_message_with_link(f"Calculadora Sigla {sigla}", f"Calculadora da sigla {sigla} gerada com sucesso\n\nClique no botão abaixo para copiar o link gerado\n", f"{link}")

@@ -45,7 +45,11 @@ with sync_playwright() as p:
         estimate_page.resources_alb()
         estimate_page.environments(sigla)
         estimate_page.shared(sigla)
- 
+
+        browser.close()
+        
+        estimate_page.link()
+
     except TargetClosedError:
         show_error_message("Error", f"A página foi encerrada pelo usuário")
         sys.exit(1)
