@@ -1,10 +1,16 @@
 from playwright.sync_api import Page
 from playwright.sync_api import expect
 from data.data_processing import *
- 
+
+from datetime import datetime
+import os
+
 class EstimatePage:
     def __init__(self, page: Page):
         self.page = page
+        self.environments_pre_prod_2 = False
+        self.environments_1 = False
+        self.environments_no_prod_2 = False
  
     def view_page_estimate(self):
         my_estimate = self.page.locator("//h1")
@@ -33,6 +39,7 @@ class EstimatePage:
         while e <= qtde_environments:
    
             each_environment = self.page.locator(f"li [data-parent-group='true']:nth-child({e}) p").all()
+            global environment_name
             environment_name = each_environment[0].inner_text()
  
             for environment in each_environment:
@@ -236,8 +243,8 @@ class EstimatePage:
             elif qtde_environments == 2:
                 print(f"ATENÇÃO! Existe o ambiente Pre-Production na sigla {sigla}, porém não possui os 4 ambientes estimados. \n Você deve estimar os ambientes manualmente conforme necessário")
                 print("\n ------------------------------------------------------------ \n")
- 
-                show_warning_message("Aviso", f"ATENÇÃO! Existe o ambiente Pre-Production na sigla {sigla}, porém não possui os 4 ambientes estimados. \n\nVocê deve estimar os ambientes manualmente conforme necessário")
+
+                self.environments_pre_prod_2 = True
  
         else:
  
@@ -248,8 +255,8 @@ class EstimatePage:
             elif qtde_environments == 1:
                 print(f"ATENÇÃO! Só existe o ambiente {environment_name} na sigla {sigla}. \n Você deve estimar os ambientes manualmente conforme necessário")
                 print("\n ------------------------------------------------------------ \n")
- 
-                show_warning_message("Aviso", f"ATENÇÃO! Só existe o ambiente {environment_name} na sigla {sigla}. \n\nVocê deve estimar os ambientes manualmente conforme necessário")
+
+                self.environments_1 = True
  
             elif homologation.is_visible() and production.is_visible() and qtde_environments == 2:
                 print("Criando ambiente DEVELOPMENT \n")
@@ -302,8 +309,8 @@ class EstimatePage:
             elif not production.is_visible() and qtde_environments == 2:
                 print(f"ATENÇÃO! Só existem 2 ambientes na sigla {sigla}. \n Você deve estimar os ambientes manualmente conforme necessário")
                 print("\n ------------------------------------------------------------ \n")
- 
-                show_warning_message("Aviso", f"ATENÇÃO! Só existem 2 ambientes na sigla {sigla}. \n\nVocê deve estimar os ambientes restantes manualmente conforme necessário")
+
+                self.environments_no_prod_2 = True
  
             else:
                 print("Não foi alterado nada sobre ambientes")
@@ -332,4 +339,64 @@ class EstimatePage:
         print("\n ------------------------------------------------------------ \n")
 
     def link(self):
-        show_information_message_with_link(f"Calculadora Sigla {sigla}", f"Calculadora da sigla {sigla} gerada com sucesso\n\nClique no botão abaixo para copiar o link gerado\n", f"{link}")
+
+        # Obter o diretório do arquivo de script atual
+        diretorio_atual = os.path.dirname(__file__)
+        
+        # Navegar para o diretório pai do diretório do script
+        diretorio_pai = os.path.abspath(os.path.join(diretorio_atual, '../../../'))
+
+        # Criar diretório "resultados" no diretório pai
+        diretorio_resultados = os.path.join(diretorio_pai, "resultados")
+        if not os.path.exists(diretorio_resultados):
+            os.makedirs(diretorio_resultados)
+        
+        # Obter a data e hora atual
+        data_e_hora_atual = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+        # Criar o nome do arquivo
+        nome_arquivo = f"calculadora_sigla_{sigla}_{data_e_hora_atual}.txt"
+
+        # Caminho completo para o arquivo
+        caminho_arquivo = os.path.join(diretorio_resultados, nome_arquivo)
+
+        # Escrever no arquivo
+        with open(caminho_arquivo, "w") as arquivo:
+            arquivo.write(f"Calculadora da sigla {sigla} gerada com sucesso\n\n")
+            arquivo.write(f"Link: {link}\n")
+            arquivo.write(f"\n--------------------------------------------------------------------------------------\n")
+            arquivo.write(f"\nAvisos:\n")
+            arquivo.write(f"Para cada ambiente foram aplicadas as regras abaixo:\n\nAmbiente com WEBSERVERS (Multi AZ e Blue/Green): \n\nDevelopment = 2 AZs x 2 Blue/Green \nHomologation = 2 AZs x 2 Blue/Green \nProduction = 3 AZs x 2 Blue/Green \n\nAmbiente sem WEBSERVERS (Multi AZ): \n\nDevelopment = 2 AZs \nHomologation = 2 AZs \nProduction = 3 AZs\n\n")
+            arquivo.write(f"Não foram adicionados servidores com as seguintes características: \n\nAMBIENTES: 'Disaster Recovery (DR)' \nFUNÇÃO: 'Banco de Dados'\n")
+            arquivo.write(f"\n--------------------------------------------------------------------------------------\n")
+            arquivo.write(f"\nPara obter mais informações, acione os desenvolvedores\n")
+
+        if self.environments_pre_prod_2 == True:
+            environment_message1 = f"<p style='font-size: 14px;'>Calculadora da sigla {sigla} <span style='font-weight: bold; color: #008000;'>gerada com sucesso!</span></p>"
+            environment_message1 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>ATENÇÃO! Existe o ambiente Pre-Production na sigla {sigla}, porém não possui os 4 ambientes estimados."
+            environment_message1 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Você deve estimar os ambientes manualmente conforme necessário"
+            environment_message1 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
+            environment_message1 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
+            show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message1, link)
+        elif self.environments_1 == True:
+            environment_message2 = f"<p style='font-size: 14px;'>Calculadora da sigla {sigla} <span style='font-weight: bold; color: #008000;'>gerada com sucesso!</span></p>"
+            environment_message2 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>ATENÇÃO! Só existe o ambiente {environment_name} na sigla {sigla}."
+            environment_message2 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Você deve estimar os ambientes manualmente conforme necessário"
+            environment_message2 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
+            environment_message2 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
+            show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message2, link)
+        elif self.environments_no_prod_2 == True:
+            environment_message3 = f"<p style='font-size: 14px;'>Calculadora da sigla {sigla} <span style='font-weight: bold; color: #008000;'>gerada com sucesso!</span></p>"
+            environment_message3 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>ATENÇÃO! Só existem 2 ambientes na sigla {sigla}."
+            environment_message3 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Você deve estimar os ambientes restantes manualmente conforme necessário"
+            environment_message3 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
+            environment_message3 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
+            show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message3, link)
+        else:
+            link_message = f"<p style='font-size: 14px;'>Calculadora da sigla {sigla} <span style='font-weight: bold; color: #008000;'>gerada com sucesso!</span></p>"
+            link_message += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
+            link_message += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
+            show_information_message_with_link(f"Calculadora Sigla {sigla}", link_message, link)
+
+        # Abre o diretório "resultados" após a execução do script
+        os.system(f"explorer {diretorio_resultados}")

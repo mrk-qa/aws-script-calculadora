@@ -16,6 +16,9 @@ except ValueError as e:
     print(e)
     sys.exit(1)
 
+page_message = f"<p style='font-size: 14px;'><b>A partir de agora, será aberto o navegador e a automação irá fazer todo o processo, você não precisa fazer nada!</b>"
+show_information_message("Aviso", page_message)
+
 with sync_playwright() as p:
     chromium_path = os.path.abspath("browser/chrome/chrome.exe")
     browser = p.chromium.launch(executable_path=chromium_path, headless=False, args=["--start-maximized"])

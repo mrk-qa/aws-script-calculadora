@@ -6,6 +6,7 @@ from openpyxl import load_workbook
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox, QVBoxLayout, QMainWindow, QProgressBar
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt, QTimer
+from playwright._impl._errors import TargetClosedError
 
 import sys
 import os
@@ -464,8 +465,6 @@ def combinacoes_configuracoes(caminho_arquivo, aba):
     contagem_combinacoes = df['COMBINACAO'].value_counts().reset_index()
     contagem_combinacoes.columns = ['COMBINACAO', 'QUANTIDADE']
  
-    show_information_message("Aviso", f"Para cada ambiente foi aplicada a regra em servidores WEBSERVERS referente a Multi AZ e Blue/Green \n\nAmbientes: \n\nDevelopment = 2 AZs x 2 Blue/Green \nHomologation = 2 AZs x 2 Blue/Green \nProduction = 3 AZs x 2 Blue/Green \n\n")
- 
     # Formatar os resultados no formato desejado e aplica calculo de Multi-AZ e Blue/Green
     def formatar_resultado(row):
         combinacao = row['COMBINACAO']
@@ -535,12 +534,41 @@ def criar_aba_com_resultados(caminho_arquivo, resultados):
                 linha = [partes[0], descricao,'sa-east-1', partes[3], '', 'Shared Instances', partes[1], '40', 'Hours/Week', 'On-Demand', 'General Purpose SSD (gp3)', partes[4], '', '', '2x Daily', '10']
                 ambiente_adicional.append(partes[0])
             nova_aba.append(linha)
+
+    environment_add = False
  
     if ambiente_adicional:
         ambiente_adicional = list(set(ambiente_adicional))
         ambiente_adicional = [str(ambiente) for ambiente in ambiente_adicional]
         ambiente_adicional = ', '.join(ambiente_adicional)
-        show_warning_message("Aviso", f"Foram encontrados ambientes fora do padrão(Development, Homologation e Production): \n\n{ambiente_adicional}")
+
+        environment_add = True
+
+    if environment_add == True:
+        default_message = "<p style='font-size: 14px;'>Para cada ambiente foram aplicadas as regras abaixo:"
+        default_message += "<p style='font-size: 14px;'><b>Ambiente com WEBSERVERS (Multi AZ e Blue/Green):</b>"
+        default_message += "<p style='font-size: 14px;'>Development = 2 AZs x 2 Blue/Green<br>Homologation = 2 AZs x 2 Blue/Green<br>Production = 3 AZs x 2 Blue/Green"
+        default_message += "<p style='font-size: 14px;'><b>Ambiente sem WEBSERVERS (Multi AZ):</b>"
+        default_message += "<p style='font-size: 14px;'>Development = 2 AZs<br>Homologation = 2 AZs<br>Production = 3 AZs"
+        default_message += "<p style='font-size: 14px;'>Não foram adicionados servidores com as seguintes características:"
+        default_message += "<p style='font-size: 14px;'>AMBIENTE: <b>'Disaster Recovery (DR)'</b>"
+        default_message += "<p style='font-size: 14px;'>FUNÇÃO: <b>'Banco de Dados'</b>"
+
+        default_message += "<br><p style='font-size: 14px; color: red; font-weight: bold;'>Atenção! Para essa sigla, foram encontrados ambientes fora do padrão (Development, Homologation e Production), abaixo serão listados os ambientes:"
+        default_message += f"<p style='font-size: 14px; color: red; font-weight: bold; text-align: center;'>{ambiente_adicional}"
+        show_information_message("Aviso", default_message)
+
+    else:
+        default_message = "<p style='font-size: 14px;'>Para cada ambiente foram aplicadas as regras abaixo:"
+        default_message += "<p style='font-size: 14px;'><b>Ambiente com WEBSERVERS (Multi AZ e Blue/Green):</b>"
+        default_message += "<p style='font-size: 14px;'>Development = 2 AZs x 2 Blue/Green<br>Homologation = 2 AZs x 2 Blue/Green<br>Production = 3 AZs x 2 Blue/Green"
+        default_message += "<p style='font-size: 14px;'><b>Ambiente sem WEBSERVERS (Multi AZ):</b>"
+        default_message += "<p style='font-size: 14px;'>Development = 2 AZs<br>Homologation = 2 AZs<br>Production = 3 AZs"
+        default_message += "<p style='font-size: 14px;'>Não foram adicionados servidores com as seguintes características:"
+        default_message += "<p style='font-size: 14px;'>AMBIENTE: <b>'Disaster Recovery (DR)'</b>"
+        default_message += "<p style='font-size: 14px;'>FUNÇÃO: <b>'Banco de Dados'</b>"
+
+        show_information_message("Aviso", default_message)
     
     # Iterar sobre as células da coluna B (Descricao) e remover as aspas
     for linha in aba_controle.iter_rows(min_row=2, min_col=2, max_col=2):  # Coluna B (Descricao) começando da segunda linha
@@ -575,9 +603,7 @@ def combinacoes_instancias(caminho_arquivo, aba):
     # Contar o número de ocorrências de cada combinação
     contagem_combinacoes = df['COMBINACAO'].value_counts().reset_index()
     contagem_combinacoes.columns = ['COMBINACAO', 'QUANTIDADE']
- 
-    #show_information_message("Aviso", f"Para cada ambiente foi aplicada a regra em servidores WEBSERVERS referente a Multi AZ e Blue/Green \n\nAmbientes: \n\nDevelopment = 2 AZs x 2 Blue/Green \nHomologation = 2 AZs x 2 Blue/Green \nProduction = 3 AZs x 2 Blue/Green \n\n")
- 
+
     # Formatar os resultados no formato desejado e aplica calculo de Multi-AZ e Blue/Green
     def formatar_resultado(row):
         combinacao = row['COMBINACAO']
@@ -792,7 +818,8 @@ def copiar_dados(origem, destino):
     # Verificar se os dados foram copiados
     if arquivos_copiados == 0:
         os.remove(destino) if os.path.exists(destino) else None
-        show_warning_message("Aviso", f"Informações insuficientes para gerar o Modelo AWS")
+        template_error_message = "<p style='font-size: 14px;'>Informações insuficientes para gerar o Modelo AWS"
+        show_warning_message("Aviso", template_error_message)
         exit(1)
 
 ############################################################
@@ -829,7 +856,8 @@ try:
             qtde_siglas = dados_filtrados_siglas.__len__()
  
             if qtde_siglas == 0:
-                show_warning_message("Aviso", f"Sigla {sigla} não encontrada")
+                sigla_no_message = f"<p style='font-size: 14px;'>Sigla {sigla} não encontrada"
+                show_warning_message("Aviso", sigla_no_message)
                 exit(1)
  
             # Define os filtros adicionais desejados
@@ -846,14 +874,16 @@ try:
                 dados_filtrados = dados_filtrados[(dados_filtrados['CLASSE'] == 'Windows Server')]
                 soPesquisa = "apenas Windows"
                 if len(dados_filtrados) == 0:
-                    show_error_message("Error", f"A sigla {sigla} não possui servidores Windows")
+                    so_win_no_message = f"<p style='font-size: 14px;'>A sigla {sigla} não possui servidores Windows"
+                    show_error_message("Error", so_win_no_message)
                     exit(1)
  
             elif so_selecionado == "Linux":
                 dados_filtrados = dados_filtrados[(dados_filtrados['CLASSE'] == 'Linux Server')]
                 soPesquisa = "apenas Linux"
                 if len(dados_filtrados) == 0:
-                    show_error_message("Error", f"A sigla {sigla} não possui servidores Linux")
+                    so_linux_no_message = f"<p style='font-size: 14px;'>A sigla {sigla} não possui servidores Linux"
+                    show_error_message("Error", so_linux_no_message)
                     exit(1)
  
             if so_selecionado == "Windows e Linux":
@@ -887,7 +917,10 @@ try:
             dados_selecionados.loc[:, "STORAGE"] = dados_selecionados["STORAGE"].apply(lambda x: math.ceil(x))
  
             if (dados_selecionados["STORAGE"] == 0).any():
-                show_information_message_with_link("Aviso", f"Há servidores com dados == 0 (zero) no STORAGE da sigla: {sigla}. \n\nPor favor verifique no CMDB a quantidade de STORAGE do servidor. \n\nLink do CMDB: https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module", f"https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module")
+                storage_no_message = f"<p style='font-size: 14px; color: red; font-weight: bold;'>ATENÇÃO! Há servidores com STORAGE = 0 (zero) na sigla: {sigla}"
+                storage_no_message += f"<p style='font-size: 14px;'>Por favor verifique no CMDB a quantidade de STORAGE correta do servidor"
+                storage_no_message += "<p style='font-size: 14px;'>Link do CMDB: <a href='https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module'>https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module</a>"
+                show_information_message("Aviso", storage_no_message)
                 print(f"\n Há servidores com dados == 0 (zero) no STORAGE da sigla: {sigla}. Por favor verifique no CMDB a quantidade de STORAGE do servidor. \n \nLink do CMDB: https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module")
  
             # Cria uma nova planilha com os dados selecionados
@@ -953,8 +986,6 @@ try:
                         worksheet.cell(row=index + 2, column=2, value=new_description)
  
                 workbook.save(novo_caminho_arquivo)
- 
-                show_information_message("Aviso", f"Não foram adicionados servidores com as seguintes características: \n\nAMBIENTE: 'Disaster Recovery (DR)' \nFUNÇÃO: 'Banco de Dados'")
  
                 ocultar_aba(novo_caminho_arquivo, novo_nome_aba)
  
