@@ -372,28 +372,31 @@ class EstimatePage:
             arquivo.write(f"\nPara obter mais informações, acione os desenvolvedores\n")
 
         if self.environments_pre_prod_2 == True:
-            environment_message1 = f"<p style='font-size: 14px;'>Calculadora da sigla {sigla} <span style='font-weight: bold; color: #008000;'>gerada com sucesso!</span></p>"
-            environment_message1 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>ATENÇÃO! Existe o ambiente Pre-Production na sigla {sigla}, porém não possui os 4 ambientes estimados."
-            environment_message1 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Você deve estimar os ambientes manualmente conforme necessário"
+            environment_message1 = f"<p style='font-size: 14px; font-weight: bold; color: #008000;'>Calculadora da sigla {sigla} gerada com sucesso!</p>"
+            environment_message1 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
+            environment_message1 += f"<p style='font-size: 14px;'>Existe o ambiente Pre-Production na sigla <b style='color: red;'>{sigla}</b>, porém não possui os 4 ambientes estimados"
+            environment_message1 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
             environment_message1 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
             environment_message1 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message1, link)
         elif self.environments_1 == True:
-            environment_message2 = f"<p style='font-size: 14px;'>Calculadora da sigla {sigla} <span style='font-weight: bold; color: #008000;'>gerada com sucesso!</span></p>"
-            environment_message2 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>ATENÇÃO! Só existe o ambiente {environment_name} na sigla {sigla}."
-            environment_message2 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Você deve estimar os ambientes manualmente conforme necessário"
+            environment_message2 = f"<p style='font-size: 14px; font-weight: bold; color: #008000;'>Calculadora da sigla {sigla} gerada com sucesso!</p>"
+            environment_message2 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
+            environment_message2 += f"<p style='font-size: 14px;'>Só existe o ambiente <b style='color: red;'>{environment_name}</b> na sigla <b style='color: red;'>{sigla}</b>"
+            environment_message2 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
             environment_message2 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
             environment_message2 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message2, link)
         elif self.environments_no_prod_2 == True:
-            environment_message3 = f"<p style='font-size: 14px;'>Calculadora da sigla {sigla} <span style='font-weight: bold; color: #008000;'>gerada com sucesso!</span></p>"
-            environment_message3 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>ATENÇÃO! Só existem 2 ambientes na sigla {sigla}."
-            environment_message3 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Você deve estimar os ambientes restantes manualmente conforme necessário"
+            environment_message3 = f"<p style='font-size: 14px; font-weight: bold; color: #008000;'>Calculadora da sigla {sigla} gerada com sucesso!</p>"
+            environment_message3 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
+            environment_message3 += f"<p style='font-size: 14px;'>Só existem 2 ambientes na sigla <b style='color: red;'>{sigla}</b>"
+            environment_message3 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
             environment_message3 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
             environment_message3 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message3, link)
         else:
-            link_message = f"<p style='font-size: 14px;'>Calculadora da sigla {sigla} <span style='font-weight: bold; color: #008000;'>gerada com sucesso!</span></p>"
+            link_message = f"<p style='font-size: 14px; font-weight: bold; color: #008000;'>Calculadora da sigla {sigla} gerada com sucesso!</p>"
             link_message += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
             link_message += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", link_message, link)

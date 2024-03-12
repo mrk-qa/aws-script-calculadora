@@ -539,7 +539,7 @@ def criar_aba_com_resultados(caminho_arquivo, resultados):
  
     if ambiente_adicional:
         ambiente_adicional = list(set(ambiente_adicional))
-        ambiente_adicional = [str(ambiente) for ambiente in ambiente_adicional]
+        ambiente_adicional = ["Disaster Recovery (DR)" if str(ambiente) == "DR" else str(ambiente) for ambiente in ambiente_adicional]
         ambiente_adicional = ', '.join(ambiente_adicional)
 
         environment_add = True
@@ -550,12 +550,10 @@ def criar_aba_com_resultados(caminho_arquivo, resultados):
         default_message += "<p style='font-size: 14px;'>Development = 2 AZs x 2 Blue/Green<br>Homologation = 2 AZs x 2 Blue/Green<br>Production = 3 AZs x 2 Blue/Green"
         default_message += "<p style='font-size: 14px;'><b>Ambiente sem WEBSERVERS (Multi AZ):</b>"
         default_message += "<p style='font-size: 14px;'>Development = 2 AZs<br>Homologation = 2 AZs<br>Production = 3 AZs"
-        default_message += "<p style='font-size: 14px;'>Não foram adicionados servidores com as seguintes características:"
-        default_message += "<p style='font-size: 14px;'>AMBIENTE: <b>'Disaster Recovery (DR)'</b>"
-        default_message += "<p style='font-size: 14px;'>FUNÇÃO: <b>'Banco de Dados'</b>"
-
-        default_message += "<br><p style='font-size: 14px; color: red; font-weight: bold;'>Atenção! Para essa sigla, foram encontrados ambientes fora do padrão (Development, Homologation e Production), abaixo serão listados os ambientes:"
-        default_message += f"<p style='font-size: 14px; color: red; font-weight: bold; text-align: center;'>{ambiente_adicional}"
+        default_message += "<br><p style='font-size: 14px;'><b>Não foram adicionados servidores de </b><b style='color: red;'>BANCO DE DADOS</b>"
+        default_message += "<br><p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
+        default_message += "<p style='font-size: 14px;'>Para essa sigla, foram encontrados ambientes fora do padrão (Development, Homologation e Production), abaixo serão listados os ambientes:"
+        default_message += f"<p style='font-size: 14px; color: red; font-weight: bold;'>{ambiente_adicional}"
         show_information_message("Aviso", default_message)
 
     else:
@@ -564,10 +562,7 @@ def criar_aba_com_resultados(caminho_arquivo, resultados):
         default_message += "<p style='font-size: 14px;'>Development = 2 AZs x 2 Blue/Green<br>Homologation = 2 AZs x 2 Blue/Green<br>Production = 3 AZs x 2 Blue/Green"
         default_message += "<p style='font-size: 14px;'><b>Ambiente sem WEBSERVERS (Multi AZ):</b>"
         default_message += "<p style='font-size: 14px;'>Development = 2 AZs<br>Homologation = 2 AZs<br>Production = 3 AZs"
-        default_message += "<p style='font-size: 14px;'>Não foram adicionados servidores com as seguintes características:"
-        default_message += "<p style='font-size: 14px;'>AMBIENTE: <b>'Disaster Recovery (DR)'</b>"
-        default_message += "<p style='font-size: 14px;'>FUNÇÃO: <b>'Banco de Dados'</b>"
-
+        default_message += "<br><p style='font-size: 14px;'><b>Não foram adicionados servidores de </b><b style='color: red;'>BANCO DE DADOS</b>"
         show_information_message("Aviso", default_message)
     
     # Iterar sobre as células da coluna B (Descricao) e remover as aspas
@@ -917,7 +912,7 @@ try:
             dados_selecionados.loc[:, "STORAGE"] = dados_selecionados["STORAGE"].apply(lambda x: math.ceil(x))
  
             if (dados_selecionados["STORAGE"] == 0).any():
-                storage_no_message = f"<p style='font-size: 14px; color: red; font-weight: bold;'>ATENÇÃO! Há servidores com STORAGE = 0 (zero) na sigla: {sigla}"
+                storage_no_message = f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção! Há servidores com STORAGE = 0 (zero) na sigla: {sigla}"
                 storage_no_message += f"<p style='font-size: 14px;'>Por favor verifique no CMDB a quantidade de STORAGE correta do servidor"
                 storage_no_message += "<p style='font-size: 14px;'>Link do CMDB: <a href='https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module'>https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module</a>"
                 show_information_message("Aviso", storage_no_message)
