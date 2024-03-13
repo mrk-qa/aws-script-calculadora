@@ -268,7 +268,7 @@ def on_help_clicked():
 
     # Mensagem principal em fonte maior
     main_message = "<h2>Passo a passo para a utilização do script</h2>"
-    main_message += "<p style='font-size: 12px; color: gray'>Atenção! Antes de executar o script, certifique-se de que o diretório <span style='color: red;'><b>NÃO SEJA</b></span> dentro do Microsoft OneDrive</p>"
+    main_message += "<p style='font-size: 14px; color: gray'>Atenção! Antes de executar o script, certifique-se de que o diretório <span style='color: red;'><b>NÃO SEJA</b></span> dentro do Microsoft OneDrive</p>"
     main_message += "<br><p style='font-size: 14px;'>1 - Selecione o sistema operacional que queira filtrar da sigla</p>"
     main_message += "<p style='font-size: 14px;'>2 - Selecione o tipo de calculadora</p>"
     main_message += "<p style='font-size: 14px;'>3 - Preencha a sigla</p>"
@@ -912,7 +912,8 @@ try:
             dados_selecionados.loc[:, "STORAGE"] = dados_selecionados["STORAGE"].apply(lambda x: math.ceil(x))
  
             if (dados_selecionados["STORAGE"] == 0).any():
-                storage_no_message = f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção! Há servidores com STORAGE = 0 (zero) na sigla: {sigla}"
+                storage_no_message = f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
+                storage_no_message += f"<p style='font-size: 14px;'>Há servidores com STORAGE = 0 (zero) na sigla: <b style='color: red;'>{sigla}</b>"
                 storage_no_message += f"<p style='font-size: 14px;'>Por favor verifique no CMDB a quantidade de STORAGE correta do servidor"
                 storage_no_message += "<p style='font-size: 14px;'>Link do CMDB: <a href='https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module'>https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module</a>"
                 show_information_message("Aviso", storage_no_message)
