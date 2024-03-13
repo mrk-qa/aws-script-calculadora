@@ -16,7 +16,8 @@ except ValueError as e:
     print(e)
     sys.exit(1)
 
-page_message = f"<p style='font-size: 14px;'><b>A partir de agora, será aberto o navegador e a automação irá fazer todo o processo, você não precisa fazer nada!</b>"
+page_message = "<p style='font-size: 14px;'>A partir de agora, o navegador será aberto e a automação irá conduzir todo o processo automaticamente. <b>Você não precisa realizar nenhuma ação!</b></p>"
+page_message += "<p style='font-size: 14px;'>Aproveite para pegar um café ☕</p>"
 show_information_message("Aviso", page_message)
 
 with sync_playwright() as p:

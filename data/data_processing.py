@@ -268,7 +268,7 @@ def on_help_clicked():
 
     # Mensagem principal em fonte maior
     main_message = "<h2>Passo a passo para a utilização do script</h2>"
-    main_message += "<p style='font-size: 14px; color: gray'>Atenção! Antes de executar o script, certifique-se de que o diretório <span style='color: red;'><b>NÃO SEJA</b></span> dentro do Microsoft OneDrive</p>"
+    main_message += "<p style='font-size: 14px; color: gray'> <span style='color: red;'><b>Atenção!</b></span> Antes de executar o script, certifique-se de que o diretório <b>NÃO SEJA</b> dentro do <span style='color: blue;'>Microsoft OneDrive</span></p>"
     main_message += "<br><p style='font-size: 14px;'>1 - Selecione o sistema operacional que queira filtrar da sigla</p>"
     main_message += "<p style='font-size: 14px;'>2 - Selecione o tipo de calculadora</p>"
     main_message += "<p style='font-size: 14px;'>3 - Preencha a sigla</p>"
@@ -282,7 +282,7 @@ def on_help_clicked():
     main_message += "<br>"
 
     # Mensagem adicional em fonte menor
-    additional_message = "<p style='font-size: 14px;'>Para mais detalhes, consulte os desenvolvedores.</p>"
+    additional_message = "<p style='font-size: 14px;'>Para mais detalhes, consulte os desenvolvedores 💻</p>"
 
     # Combine as mensagens
     full_message = main_message + additional_message
@@ -550,7 +550,7 @@ def criar_aba_com_resultados(caminho_arquivo, resultados):
         default_message += "<p style='font-size: 14px;'>Development = 2 AZs x 2 Blue/Green<br>Homologation = 2 AZs x 2 Blue/Green<br>Production = 3 AZs x 2 Blue/Green"
         default_message += "<p style='font-size: 14px;'><b>Ambiente sem WEBSERVERS (Multi AZ):</b>"
         default_message += "<p style='font-size: 14px;'>Development = 2 AZs<br>Homologation = 2 AZs<br>Production = 3 AZs"
-        default_message += "<br><p style='font-size: 14px;'><b>Não foram adicionados servidores de </b><b style='color: red;'>BANCO DE DADOS</b>"
+        default_message += "<p style='font-size: 14px;'><b>Não foram adicionados servidores de </b><b style='color: red;'>BANCO DE DADOS</b>"
         default_message += "<br><p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
         default_message += "<p style='font-size: 14px;'>Para essa sigla, foram encontrados ambientes fora do padrão (Development, Homologation e Production), abaixo serão listados os ambientes:"
         default_message += f"<p style='font-size: 14px; color: red; font-weight: bold;'>{ambiente_adicional}"
@@ -562,7 +562,7 @@ def criar_aba_com_resultados(caminho_arquivo, resultados):
         default_message += "<p style='font-size: 14px;'>Development = 2 AZs x 2 Blue/Green<br>Homologation = 2 AZs x 2 Blue/Green<br>Production = 3 AZs x 2 Blue/Green"
         default_message += "<p style='font-size: 14px;'><b>Ambiente sem WEBSERVERS (Multi AZ):</b>"
         default_message += "<p style='font-size: 14px;'>Development = 2 AZs<br>Homologation = 2 AZs<br>Production = 3 AZs"
-        default_message += "<br><p style='font-size: 14px;'><b>Não foram adicionados servidores de </b><b style='color: red;'>BANCO DE DADOS</b>"
+        default_message += "<p style='font-size: 14px;'><b>Não foram adicionados servidores de </b><b style='color: red;'>BANCO DE DADOS</b>"
         show_information_message("Aviso", default_message)
     
     # Iterar sobre as células da coluna B (Descricao) e remover as aspas
@@ -813,7 +813,7 @@ def copiar_dados(origem, destino):
     # Verificar se os dados foram copiados
     if arquivos_copiados == 0:
         os.remove(destino) if os.path.exists(destino) else None
-        template_error_message = "<p style='font-size: 14px;'>Informações insuficientes para gerar o Modelo AWS"
+        template_error_message = "<p style='font-size: 14px;'>Informações insuficientes para gerar o Modelo AWS ⛔"
         show_warning_message("Aviso", template_error_message)
         exit(1)
 
@@ -851,8 +851,8 @@ try:
             qtde_siglas = dados_filtrados_siglas.__len__()
  
             if qtde_siglas == 0:
-                sigla_no_message = f"<p style='font-size: 14px;'>Sigla {sigla} não encontrada"
-                show_warning_message("Aviso", sigla_no_message)
+                sigla_no_message = f"<p style='font-size: 14px;'>Sigla <b style='color: red;'>{sigla}</b> não encontrada"
+                show_error_message("Error", sigla_no_message)
                 exit(1)
  
             # Define os filtros adicionais desejados
@@ -869,7 +869,7 @@ try:
                 dados_filtrados = dados_filtrados[(dados_filtrados['CLASSE'] == 'Windows Server')]
                 soPesquisa = "apenas Windows"
                 if len(dados_filtrados) == 0:
-                    so_win_no_message = f"<p style='font-size: 14px;'>A sigla {sigla} não possui servidores Windows"
+                    so_win_no_message = f"<p style='font-size: 14px;'>A sigla <b style='color: red;'>{sigla}</b> não possui servidores Windows"
                     show_error_message("Error", so_win_no_message)
                     exit(1)
  
@@ -877,7 +877,7 @@ try:
                 dados_filtrados = dados_filtrados[(dados_filtrados['CLASSE'] == 'Linux Server')]
                 soPesquisa = "apenas Linux"
                 if len(dados_filtrados) == 0:
-                    so_linux_no_message = f"<p style='font-size: 14px;'>A sigla {sigla} não possui servidores Linux"
+                    so_linux_no_message = f"<p style='font-size: 14px;'>A sigla <b style='color: red;'>{sigla}</b> não possui servidores Linux"
                     show_error_message("Error", so_linux_no_message)
                     exit(1)
  
@@ -915,7 +915,7 @@ try:
                 storage_no_message = f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
                 storage_no_message += f"<p style='font-size: 14px;'>Há servidores com STORAGE = 0 (zero) na sigla: <b style='color: red;'>{sigla}</b>"
                 storage_no_message += f"<p style='font-size: 14px;'>Por favor verifique no CMDB a quantidade de STORAGE correta do servidor"
-                storage_no_message += "<p style='font-size: 14px;'>Link do CMDB: <a href='https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module'>https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module</a>"
+                storage_no_message += "<p style='font-size: 14px;'><a href='https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module'>Clique aqui para acessar o CMDB</a>"
                 show_information_message("Aviso", storage_no_message)
                 print(f"\n Há servidores com dados == 0 (zero) no STORAGE da sigla: {sigla}. Por favor verifique no CMDB a quantidade de STORAGE do servidor. \n \nLink do CMDB: https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module")
  

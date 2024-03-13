@@ -366,39 +366,39 @@ class EstimatePage:
             arquivo.write(f"Link: {link}\n")
             arquivo.write(f"\n--------------------------------------------------------------------------------------\n")
             arquivo.write(f"\nAvisos:\n")
-            arquivo.write(f"Para cada ambiente foram aplicadas as regras abaixo:\n\nAmbiente com WEBSERVERS (Multi AZ e Blue/Green): \n\nDevelopment = 2 AZs x 2 Blue/Green \nHomologation = 2 AZs x 2 Blue/Green \nProduction = 3 AZs x 2 Blue/Green \n\nAmbiente sem WEBSERVERS (Multi AZ): \n\nDevelopment = 2 AZs \nHomologation = 2 AZs \nProduction = 3 AZs\n\n")
-            arquivo.write(f"Não foram adicionados servidores com as seguintes características: \n\nAMBIENTES: 'Disaster Recovery (DR)' \nFUNÇÃO: 'Banco de Dados'\n")
+            arquivo.write(f"\nPara cada ambiente foram aplicadas as regras abaixo:\n\nAmbiente com WEBSERVERS (Multi AZ e Blue/Green): \n\nDevelopment = 2 AZs x 2 Blue/Green \nHomologation = 2 AZs x 2 Blue/Green \nProduction = 3 AZs x 2 Blue/Green \n\nAmbiente sem WEBSERVERS (Multi AZ): \n\nDevelopment = 2 AZs \nHomologation = 2 AZs \nProduction = 3 AZs\n\n")
+            arquivo.write(f"Não foram adicionados servidores de BANCO DE DADOS\n")
             arquivo.write(f"\n--------------------------------------------------------------------------------------\n")
             arquivo.write(f"\nPara obter mais informações, acione os desenvolvedores\n")
 
         if self.environments_pre_prod_2 == True:
-            environment_message1 = f"<p style='font-size: 14px; font-weight: bold; color: #008000;'>Calculadora da sigla {sigla} gerada com sucesso!</p>"
+            environment_message1 = f"<p style='font-size: 14px; font-weight: bold; color: #05e805;'>Calculadora da sigla {sigla} gerada com sucesso! ✅</p>"
             environment_message1 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message1 += f"<p style='font-size: 14px;'>Existe o ambiente Pre-Production na sigla <b style='color: red;'>{sigla}</b>, porém não possui os 4 ambientes estimados"
             environment_message1 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message1 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
-            environment_message1 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
+            environment_message1 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo: {nome_arquivo}"
+            environment_message1 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message1, link)
         elif self.environments_1 == True:
-            environment_message2 = f"<p style='font-size: 14px; font-weight: bold; color: #008000;'>Calculadora da sigla {sigla} gerada com sucesso!</p>"
+            environment_message2 = f"<p style='font-size: 14px; font-weight: bold; color: #05e805;'>Calculadora da sigla {sigla} gerada com sucesso! ✅</p>"
             environment_message2 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message2 += f"<p style='font-size: 14px;'>Só existe o ambiente <b style='color: red;'>{environment_name}</b> na sigla <b style='color: red;'>{sigla}</b>"
             environment_message2 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message2 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
-            environment_message2 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
+            environment_message2 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo: {nome_arquivo}"
+            environment_message2 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message2, link)
         elif self.environments_no_prod_2 == True:
-            environment_message3 = f"<p style='font-size: 14px; font-weight: bold; color: #008000;'>Calculadora da sigla {sigla} gerada com sucesso!</p>"
+            environment_message3 = f"<p style='font-size: 14px; font-weight: bold; color: #05e805;'>Calculadora da sigla {sigla} gerada com sucesso! ✅</p>"
             environment_message3 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message3 += f"<p style='font-size: 14px;'>Só existem 2 ambientes na sigla <b style='color: red;'>{sigla}</b>"
             environment_message3 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message3 += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
-            environment_message3 += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
+            environment_message3 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo: {nome_arquivo}"
+            environment_message3 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message3, link)
         else:
-            link_message = f"<p style='font-size: 14px; font-weight: bold; color: #008000;'>Calculadora da sigla {sigla} gerada com sucesso!</p>"
-            link_message += f"<p style='font-size: 14px;'>O resumo da calculadora está na pasta <b>resultados</b> no arquivo {nome_arquivo}"
-            link_message += "<p style='font-size: 14px;'>Clique no botão abaixo para copiar o link gerado"
+            link_message = f"<p style='font-size: 14px; font-weight: bold; color: #05e805;'>Calculadora da sigla {sigla} gerada com sucesso! ✅</p>"
+            link_message += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo: {nome_arquivo}"
+            link_message += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", link_message, link)
 
         # Abre o diretório "resultados" após a execução do script
