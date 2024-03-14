@@ -5,7 +5,7 @@ warnings.simplefilter("ignore")
 from openpyxl import load_workbook
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRadioButton, QLineEdit, QPushButton, QMessageBox, QGridLayout, QFileDialog, QComboBox, QVBoxLayout, QMainWindow, QProgressBar
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread
 from playwright._impl._errors import TargetClosedError
 
 import sys
@@ -330,7 +330,7 @@ def validar_aba_excel(caminho_arquivo, aba):
         return False
 
 def converter_utf8(caminho_arquivo, aba):
-    print("Iniciando tratamento de dados \n")
+    print("Iniciando tratamento de dados. \n")
  
     # Carregar o arquivo Excel com a codificação ISO-8859-1
     df = pd.read_excel(caminho_arquivo, sheet_name=aba)
@@ -824,46 +824,92 @@ def copiar_dados(origem, destino):
 try:
     if sigla:
         caminho_arquivo = selecionar_arquivo()
- 
+
         if caminho_arquivo:
-            # Carrega o arquivo Excel e seleciona a aba
-            aba = "BASELINE"
-            if validar_aba_excel(caminho_arquivo, aba) == True:
-                planilha = pd.read_excel(caminho_arquivo, sheet_name=aba)
-            else:
-                # Pega a primeira aba disponivel
-                aba = 0
-                planilha = pd.read_excel(caminho_arquivo, sheet_name=aba)
- 
-            # Inicializa uma lista para armazenar os índices das linhas filtradas pela coluna "SIGLAS"
-            linhas_filtradas_siglas = []
- 
-            # Loop através das linhas na coluna "SIGLAS" e verifica se a pesquisa ocorre
-            for indice, valores in enumerate(planilha['SIGLAS'], start=1):
-                valores_split = str(valores).split(',') # Divide os valores por vírgula
-                for valor in valores_split:
-                    if valor.strip() == sigla:  # Verifica se a sigla é igual ao valor (removendo espaços extras)
-                        linhas_filtradas_siglas.append(indice - 1)  # Armazena o índice da linha filtrada
- 
-            # Filtra os dados que correspondem à pesquisa na coluna "SIGLAS"
-            dados_filtrados_siglas = planilha.iloc[linhas_filtradas_siglas]
- 
+            class WorkerThread(QThread):
+                update_progress = pyqtSignal(int)
+
+                def __init__(self, caminho_arquivo, sigla):
+                    super().__init__()
+                    self.caminho_arquivo = caminho_arquivo
+                    self.sigla = sigla
+
+                def run(self):
+                    aba = "BASELINE"
+                    if validar_aba_excel(self.caminho_arquivo, aba):
+                        planilha = pd.read_excel(self.caminho_arquivo, sheet_name=aba)
+                    else:
+                        aba = 0
+                        planilha = pd.read_excel(self.caminho_arquivo, sheet_name=aba)
+
+                    total_linhas = len(planilha)
+                    linhas_filtradas_siglas = []
+                    for indice, valores in enumerate(planilha['SIGLAS'], start=1):
+                        valores_split = str(valores).split(',')
+                        for valor in valores_split:
+                            if valor.strip() == self.sigla:
+                                linhas_filtradas_siglas.append(indice - 1)
+                        progresso = math.ceil((indice / total_linhas) * 100)
+                        self.update_progress.emit(progresso)
+                        time.sleep(0.1)
+                    
+                    global dados_filtrados_siglas
+                    dados_filtrados_siglas = planilha.iloc[linhas_filtradas_siglas]
+                    
+                    window.close()
+
+            class MainWindow(QMainWindow):
+                def __init__(self):
+                    super().__init__()
+                    self.setWindowTitle("Carregando...")
+                    self.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
+                    self.setGeometry(800, 500, 400, 100)
+
+                    self.layout = QVBoxLayout()
+                    self.progress_bar = QProgressBar()
+                    self.layout.addWidget(self.progress_bar)
+
+                    self.central_widget = QWidget()
+                    self.central_widget.setLayout(self.layout)
+                    self.setCentralWidget(self.central_widget)
+
+                    self.progress_bar.setValue(0)
+
+                    self.worker_thread = None
+
+                    self.start_progress()
+
+                def update_progress_bar(self, value):
+                    self.progress_bar.setValue(value)
+                    if value == 100:
+                        print("Carregamento concluído. \n")
+
+                def start_progress(self):
+                    self.worker_thread = WorkerThread(caminho_arquivo, sigla)
+                    self.worker_thread.update_progress.connect(self.update_progress_bar)
+                    self.worker_thread.start()
+
+            window = MainWindow()
+            window.show()
+            app.exec_()
+                
+            #Continuação do tratamento de dados
             qtde_siglas = dados_filtrados_siglas.__len__()
- 
+
             if qtde_siglas == 0:
                 sigla_no_message = f"<p style='font-size: 14px;'>Sigla <b style='color: red;'>{sigla}</b> não encontrada"
                 show_error_message("Error", sigla_no_message)
                 exit(1)
- 
+
             # Define os filtros adicionais desejados
             filtro_power_state = 'Powered On'
             filtro_tipo_aplicacao = 'BANCO DE DADOS'
             soWindows = False
             soLinux = False
- 
+
             # Aplica os filtros adicionais nas colunas "PowerState" e "TIPO_APLICACAO"
             dados_filtrados = dados_filtrados_siglas[(dados_filtrados_siglas['PowerState'] == filtro_power_state) & (dados_filtrados_siglas['TIPO_APLICACAO'] != filtro_tipo_aplicacao)]
- 
+
             # Aplica filtro adicional na coluna "CLASSE"
             if so_selecionado == "Windows":
                 dados_filtrados = dados_filtrados[(dados_filtrados['CLASSE'] == 'Windows Server')]
@@ -872,7 +918,7 @@ try:
                     so_win_no_message = f"<p style='font-size: 14px;'>A sigla <b style='color: red;'>{sigla}</b> não possui servidores Windows"
                     show_error_message("Error", so_win_no_message)
                     exit(1)
- 
+
             elif so_selecionado == "Linux":
                 dados_filtrados = dados_filtrados[(dados_filtrados['CLASSE'] == 'Linux Server')]
                 soPesquisa = "apenas Linux"
@@ -880,7 +926,7 @@ try:
                     so_linux_no_message = f"<p style='font-size: 14px;'>A sigla <b style='color: red;'>{sigla}</b> não possui servidores Linux"
                     show_error_message("Error", so_linux_no_message)
                     exit(1)
- 
+
             if so_selecionado == "Windows e Linux":
                 if not dados_filtrados[(dados_filtrados['CLASSE'] == 'Windows Server')].empty:
                     soWindows = True
@@ -892,10 +938,10 @@ try:
                     soPesquisa = "apenas Windows"
                 elif soWindows == False and soLinux == True:
                     soPesquisa = "apenas Linux"
- 
+
             # Escolha as colunas que deseja pegar os dados
             colunas_selecionadas = ['NOME','AMBIENTE','TIPO_APLICACAO','MEMORIA_RAM','vcpu','STORAGE','FUNCAO','CLASSE']
- 
+
             # Obtém os dados das colunas selecionadas após os filtros
             dados_selecionados = dados_filtrados[colunas_selecionadas]
             dados_selecionados = dados_selecionados.drop_duplicates(subset=["NOME"], keep="first")
@@ -910,7 +956,7 @@ try:
             dados_selecionados.loc[:, "STORAGE"] = dados_selecionados["STORAGE"].fillna(150)
             dados_selecionados.loc[:, "STORAGE"] = dados_selecionados["STORAGE"].replace('', 150)
             dados_selecionados.loc[:, "STORAGE"] = dados_selecionados["STORAGE"].apply(lambda x: math.ceil(x))
- 
+
             if (dados_selecionados["STORAGE"] == 0).any():
                 storage_no_message = f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
                 storage_no_message += f"<p style='font-size: 14px;'>Há servidores com STORAGE = 0 (zero) na sigla: <b style='color: red;'>{sigla}</b>"
@@ -918,79 +964,79 @@ try:
                 storage_no_message += "<p style='font-size: 14px;'><a href='https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module'>Clique aqui para acessar o CMDB</a>"
                 show_information_message("Aviso", storage_no_message)
                 print(f"\n Há servidores com dados == 0 (zero) no STORAGE da sigla: {sigla}. Por favor verifique no CMDB a quantidade de STORAGE do servidor. \n \nLink do CMDB: https://itau.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_server_list.do%3Fsysparm_userpref_module")
- 
+
             # Cria uma nova planilha com os dados selecionados
             novo_caminho_arquivo = selecionar_caminho_salvar()
- 
+
             # Verifica se o usuário selecionou um local para salvar o arquivo
             if novo_caminho_arquivo:
                 # Salva os dados no arquivo criado
                 dados_selecionados.to_excel(novo_caminho_arquivo, index=False)
- 
+
                 # Abre o arquivo Excel criado
                 workbook = load_workbook(novo_caminho_arquivo)
- 
+
                 # Altera o nome da primeira aba
                 primeira_aba = workbook.sheetnames[0]  # Pega o nome da primeira aba
                 novo_nome_aba = "BASELINE_SIGLA"
                 workbook[primeira_aba].title = novo_nome_aba
- 
+
                 # Salva as alterações no arquivo Excel
                 workbook.save(novo_caminho_arquivo)
- 
+
                 # Converte caracteres em ISO-8859-1 para UTF-8
                 converter_utf8(novo_caminho_arquivo, novo_nome_aba)
- 
+
                 # Renomear as colunas e ordenar
                 organizar_colunas(novo_caminho_arquivo, novo_nome_aba)
- 
+
                 # Verifica as combinações
                 resultados = combinacoes_configuracoes(novo_caminho_arquivo, novo_nome_aba)
- 
+
                 # Cria nova aba com os dados tratados
                 criar_aba_com_resultados(novo_caminho_arquivo, resultados)
- 
+
                 # Ler a aba "Controle"
                 abaControle = 'Controle'
                 data_controle = pd.read_excel(novo_caminho_arquivo, sheet_name=abaControle)
- 
+
                 # Ler os tipos de instância do arquivo txt
                 directory_path = "data/servers"
                 file_name = "instance_types.txt"
                 instance_types = read_instance_types_from_txt(directory_path, file_name)
- 
+
                 workbook = load_workbook(novo_caminho_arquivo)
                 worksheet = workbook[abaControle]
- 
+
                 for index, row in data_controle.iterrows():
                     description = row['Description']
                     ram_needed, vcpu_needed = extract_ram_and_vcpu(description)
                     if ram_needed is not None and vcpu_needed is not None:
                         recommended_instance_type = recommend_instance_type(vcpu_needed, ram_needed, instance_types)
                         info_configuration = recommended_instance_type.split(',')
- 
+
                         # Definições do instance type
                         instance_type = info_configuration[0]
                         info_ram = info_configuration[1]
                         info_cpu = info_configuration[2]
- 
+
                         # Instance type
                         worksheet.cell(row=index + 2, column=5, value=instance_type)
- 
+
                         # Nova descrição
                         new_description = replace_ram_and_vcpu(description, info_ram, info_cpu)
                         worksheet.cell(row=index + 2, column=2, value=new_description)
- 
+
                 workbook.save(novo_caminho_arquivo)
- 
+
                 ocultar_aba(novo_caminho_arquivo, novo_nome_aba)
- 
+
                 # Verifica as combinações
                 dados_tratados = combinacoes_instancias(novo_caminho_arquivo, "Controle")
- 
+
                 # Cria nova aba com os dados tratados
                 criar_aba_com_resultados_tratados(novo_caminho_arquivo, dados_tratados)
- 
+
                 arquivoTemplateAWS = selecionar_arquivo_Template()
                 if arquivoTemplateAWS:
                     destinoModeloAWS = selecionar_destino_Template(sigla)
@@ -1000,52 +1046,13 @@ try:
                         print("Nenhum destino selecionado.")
                 else:
                     print("Nenhum arquivo selecionado.")
- 
+
                 # Copia os dados para o modelo AWS
                 copiar_dados(novo_caminho_arquivo, destinoModeloAWS)
- 
+
                 print(f"Tratamento de dados concluído com sucesso. \n\nOs servidores são {soPesquisa}.")
- 
+
                 print("\n ------------------------------------------------------------ \n")
-
-                # Cria a janela do splash screen
-                splash_screen = QMainWindow()
-                splash_screen.setWindowTitle("Carregando...")
-                splash_screen.setWindowIcon(QIcon(os.getcwd() + "/assets/ntt_icone.ico"))
-                splash_screen.setFixedSize(300, 100)
-
-                # Cria a barra de progresso e define sua posição e tamanho
-                progress_bar = QProgressBar(splash_screen)
-                progress_bar.setGeometry(50, 40, 200, 20)
-
-                # Define o valor inicial da barra de progresso como 0
-                progress_bar.setValue(0)
-
-                # Mostra o splash screen
-                splash_screen.show()
-
-                # Função para atualizar o progresso da barra
-                def update_progress():
-                    progress_bar.setValue(progress_bar.value() + 2)  # Incrementa o valor da barra em 1 a cada intervalo de tempo
-                    print("Atualizando progresso... Valor atual:", progress_bar.value())
-                    if progress_bar.value() >= 100:  # Verifica se o progresso atingiu 100%
-                        timer.stop()  # Para o temporizador
-                        print("Carregamento concluído!")
-                        print("\n ------------------------------------------------------------ \n")
-
-                        splash_screen.close()  # Fecha a aplicação
-
-                # Cria e configura o temporizador para chamar a função update_progress a cada intervalo de tempo
-                timer = QTimer()
-                timer.timeout.connect(update_progress)
-                timer.start(100)  # Intervalo de tempo em milissegundos
-
-                # Inicia a execução da aplicação Qt
-                app.exec_()
- 
-            else:
-                print("A ação foi cancelada pelo usuário.")
-                exit(1)
         else:
             print("Nenhum arquivo selecionado. A ação foi cancelada pelo usuário.")
             exit(1)

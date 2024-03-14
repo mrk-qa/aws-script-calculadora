@@ -22,7 +22,7 @@ show_information_message("Aviso", page_message)
 
 with sync_playwright() as p:
     chromium_path = os.path.abspath("browser/chrome/chrome.exe")
-    browser = p.chromium.launch(executable_path=chromium_path, headless=False, args=["--start-maximized"])
+    browser = p.chromium.launch(executable_path=chromium_path, headless=False, args=["--start-maximized", "--disable-gpu", "--no-sandbox", "--disable-notifications", "--disable-plugins"])
     context = browser.new_context(no_viewport=True)
     page = context.new_page()
     page.set_default_timeout(60000)

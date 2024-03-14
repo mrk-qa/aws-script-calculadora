@@ -376,7 +376,8 @@ class EstimatePage:
             environment_message1 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message1 += f"<p style='font-size: 14px;'>Existe o ambiente Pre-Production na sigla <b style='color: red;'>{sigla}</b>, porém não possui os 4 ambientes estimados"
             environment_message1 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message1 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo: {nome_arquivo}"
+            environment_message1 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo:"
+            environment_message1 += f"<p style='font-size: 14px;'>{nome_arquivo}"
             environment_message1 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message1, link)
         elif self.environments_1 == True:
@@ -384,7 +385,8 @@ class EstimatePage:
             environment_message2 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message2 += f"<p style='font-size: 14px;'>Só existe o ambiente <b style='color: red;'>{environment_name}</b> na sigla <b style='color: red;'>{sigla}</b>"
             environment_message2 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message2 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo: {nome_arquivo}"
+            environment_message2 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo:"
+            environment_message2 += f"<p style='font-size: 14px;'>{nome_arquivo}"
             environment_message2 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message2, link)
         elif self.environments_no_prod_2 == True:
@@ -392,12 +394,14 @@ class EstimatePage:
             environment_message3 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message3 += f"<p style='font-size: 14px;'>Só existem 2 ambientes na sigla <b style='color: red;'>{sigla}</b>"
             environment_message3 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message3 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo: {nome_arquivo}"
+            environment_message3 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo:"
+            environment_message3 += f"<p style='font-size: 14px;'>{nome_arquivo}"
             environment_message3 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message3, link)
         else:
             link_message = f"<p style='font-size: 14px; font-weight: bold; color: #05e805;'>Calculadora da sigla {sigla} gerada com sucesso! ✅</p>"
-            link_message += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo: {nome_arquivo}"
+            link_message += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo:"
+            link_message += f"<p style='font-size: 14px;'>{nome_arquivo}"
             link_message += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", link_message, link)
 
