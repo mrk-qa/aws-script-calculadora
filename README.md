@@ -27,7 +27,7 @@ O script realiza o processo hoje feito de forma manual para gerar a calculadora 
 - Instalar as libs rodando o comando: `pip install -r requirements.txt`
 - Finalizar instalação do playwright incluindo navegadores rodando o comando: `playwright install`
  
-# Build do executável
+# Build do Executável
 
 - Para gerar o build no windows: `python setup.py build`
 
