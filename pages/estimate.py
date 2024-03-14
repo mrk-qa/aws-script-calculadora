@@ -340,16 +340,17 @@ class EstimatePage:
 
     def link(self):
 
+        import os
+
         # Obter o diretório do arquivo de script atual
         diretorio_atual = os.path.dirname(__file__)
-        
-        # Navegar para o diretório pai do diretório do script
-        diretorio_pai = os.path.abspath(os.path.join(diretorio_atual, '../../../'))
 
-        # Criar diretório "resultados" no diretório pai
-        diretorio_resultados = os.path.join(diretorio_pai, "resultados")
-        if not os.path.exists(diretorio_resultados):
-            os.makedirs(diretorio_resultados)
+        # Navegar para o diretório pai do diretório do script
+        dir_results = os.path.abspath(os.path.join(diretorio_atual, '../../results'))
+
+        # Verificar se o diretório "results" já existe no diretório pai
+        if not os.path.exists(dir_results):
+            os.makedirs(dir_results)
         
         # Obter a data e hora atual
         data_e_hora_atual = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -358,7 +359,7 @@ class EstimatePage:
         nome_arquivo = f"calculadora_sigla_{sigla}_{data_e_hora_atual}.txt"
 
         # Caminho completo para o arquivo
-        caminho_arquivo = os.path.join(diretorio_resultados, nome_arquivo)
+        caminho_arquivo = os.path.join(dir_results, nome_arquivo)
 
         # Escrever no arquivo
         with open(caminho_arquivo, "w") as arquivo:
@@ -376,7 +377,7 @@ class EstimatePage:
             environment_message1 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message1 += f"<p style='font-size: 14px;'>Existe o ambiente Pre-Production na sigla <b style='color: red;'>{sigla}</b>, porém não possui os 4 ambientes estimados"
             environment_message1 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message1 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo:"
+            environment_message1 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>results</b>, nome do arquivo gerado:"
             environment_message1 += f"<p style='font-size: 14px;'>{nome_arquivo}"
             environment_message1 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message1, link)
@@ -385,7 +386,7 @@ class EstimatePage:
             environment_message2 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message2 += f"<p style='font-size: 14px;'>Só existe o ambiente <b style='color: red;'>{environment_name}</b> na sigla <b style='color: red;'>{sigla}</b>"
             environment_message2 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message2 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo:"
+            environment_message2 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>results</b>, nome do arquivo gerado:"
             environment_message2 += f"<p style='font-size: 14px;'>{nome_arquivo}"
             environment_message2 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message2, link)
@@ -394,16 +395,16 @@ class EstimatePage:
             environment_message3 += f"<p style='font-size: 14px; color: red; font-weight: bold;'>Atenção!"
             environment_message3 += f"<p style='font-size: 14px;'>Só existem 2 ambientes na sigla <b style='color: red;'>{sigla}</b>"
             environment_message3 += f"<p style='font-size: 14px;'>Você deve estimar os ambientes manualmente conforme necessário"
-            environment_message3 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo:"
+            environment_message3 += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>results</b>, nome do arquivo gerado:"
             environment_message3 += f"<p style='font-size: 14px;'>{nome_arquivo}"
             environment_message3 += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", environment_message3, link)
         else:
             link_message = f"<p style='font-size: 14px; font-weight: bold; color: #05e805;'>Calculadora da sigla {sigla} gerada com sucesso! ✅</p>"
-            link_message += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>resultados</b> no arquivo:"
+            link_message += f"<p style='font-size: 14px;'>As informações da calculadora estão salvas na pasta <b>results</b>, nome do arquivo gerado:"
             link_message += f"<p style='font-size: 14px;'>{nome_arquivo}"
             link_message += f"<p style='font-size: 14px;'>Para acessar a calculadora <a href='{link}'><b>clique aqui</b></a> ou utilize o botão abaixo para copiar o link</p>"
             show_information_message_with_link(f"Calculadora Sigla {sigla}", link_message, link)
 
         # Abre o diretório "resultados" após a execução do script
-        os.system(f"explorer {diretorio_resultados}")
+        os.system(f"explorer {dir_results}")
