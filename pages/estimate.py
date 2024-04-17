@@ -83,7 +83,7 @@ class EstimatePage:
                         check.click()
                         self.page.wait_for_timeout(3000)
  
-                        update = self.page.locator("//button[@aria-label='Atualizar']")
+                        update = self.page.locator("//div[@class='appFooter']//button[@aria-label='Atualizar']")
                         update.click()
  
                     r += 1
@@ -157,7 +157,7 @@ class EstimatePage:
  
                 self.page.wait_for_timeout(3000)
  
-                save_and_view_resume = self.page.locator("//button[@aria-label='Salvar e visualizar resumo']")
+                save_and_view_resume = self.page.locator("//div[@class='appFooter']//button[@aria-label='Salvar e visualizar resumo']")
                 save_and_view_resume.click()
  
                 print("Recurso: Elastic Load Balacing foi adicionado com sucesso")

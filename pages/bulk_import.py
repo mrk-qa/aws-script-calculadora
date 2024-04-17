@@ -62,5 +62,5 @@ class BulkImportPage:
         print("\n ------------------------------------------------------------ \n")
 
     def save_and_view_resume(self):
-        save_and_view_resume = self.page.locator("//button[@aria-label='Salvar e visualizar resumo']")
+        save_and_view_resume = self.page.locator("//div[@class='appFooter']//button[@aria-label='Salvar e visualizar resumo']")
         save_and_view_resume.click()
